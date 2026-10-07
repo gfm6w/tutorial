@@ -1,0 +1,312 @@
+---
+title: "Randomized dynamic events"
+subtitle: "Part 4 · Drawing the disturbance itself"
+description: "Describe disturbances as a distribution, preview the draws on the grid graph, and generate a dataset where every sample meets a different event."
+jupyter: python3
+---
+
+::: {.session-strip}
+[20 min]{.chip} [Part 4 of 4]{.chip} [Dynawo · gridfm-datakit]{.chip}
+:::
+
+::: {.goals}
+#### In this part
+
+- Write a distribution of disturbances in a few lines of configuration.
+- Preview the drawn events on the grid graph before simulating anything.
+- Generate trajectories under faults and trips, and read back what each sample went through.
+:::
+
+```{python}
+#| echo: false
+import sys
+
+sys.path.insert(0, "..")
+from helpers import PALETTE, setup
+
+setup()
+```
+
+```{python}
+import json
+import shutil
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import pypowsybl as pp
+import yaml
+import zarr
+
+work = Path("outputs/part4")
+shutil.rmtree(work, ignore_errors=True)
+work.mkdir(parents=True)
+```
+
+## Events as a distribution
+
+Part 3 hit every operating point with the same fault. A model trained on that data learns one fault. `dynamic.event_perturbation` draws the events of every sample from **scenarios** you describe instead.
+
+- A scenario is a sequence of one or more events, drawn with a relative `weight`.
+- Each event has a `type`, a `target` and its `params`, plus an optional `delay` after the scenario's `start_time`.
+- A target is either a fixed `static_id`, or an element type at a `distance` in branch hops from an **anchor** bus, itself fixed or random.
+- Any number can be a **value spec**, a fixed value or a distribution.
+
+| Value spec | Draw |
+|---|---|
+| `0.1` | always 0.1 |
+| `{distribution: uniform, low, high}` | uniform on `[low, high)` |
+| `{distribution: normal, mean, std, min, max}` | normal, redrawn outside the bounds |
+| `{distribution: choice, values, weights}` | one of the values |
+
+| Event type | Targets | Parameters |
+|---|---|---|
+| `NodeFault` | bus | `fault_time`, `r_pu`, `x_pu` |
+| `Disconnect` | bus, generator, load, line, transformer | none |
+| `ActivePowerVariation` | generator, load | `delta_p` |
+| `ReactivePowerVariation` | generator, load | `delta_q` |
+| `ReferenceVoltageVariation` | generator | `delta_u` |
+
+## Four kinds of trouble
+
+A bus fault cleared on its own, a line trip, a fault cleared by tripping a line next to it, and the loss of a generator. Faults are twice as likely as the rest.
+
+```{python}
+event_perturbation = yaml.safe_load("""
+type: random
+n_event_variants: 4            # event variants per operating point
+scenarios:
+  - name: bus_fault
+    weight: 2
+    start_time: {distribution: uniform, low: 0.5, high: 2.0}
+    events:
+      - type: NodeFault
+        target: {element: bus, distance: 0}
+        params:
+          fault_time: {distribution: normal, mean: 0.1, std: 0.03, min: 0.05, max: 0.2}
+          r_pu: 0.0
+          x_pu: {distribution: uniform, low: 0.005, high: 0.05}
+
+  - name: line_trip
+    start_time: {distribution: uniform, low: 0.5, high: 2.0}
+    events:
+      - type: Disconnect
+        target: {element: line, distance: [0, 2]}
+
+  - name: fault_cleared_by_trip
+    start_time: {distribution: uniform, low: 0.5, high: 2.0}
+    events:
+      - type: NodeFault
+        target: {element: bus, distance: 0}
+        params:
+          fault_time: 0.2
+          r_pu: 0.0
+          x_pu: {distribution: uniform, low: 0.005, high: 0.05}
+      - type: Disconnect
+        target: {element: line, distance: 0}
+        delay: {distribution: uniform, low: 0.08, high: 0.15}
+
+  - name: generator_trip
+    start_time: {distribution: uniform, low: 0.5, high: 2.0}
+    events:
+      - type: Disconnect
+        target: {element: generator, distance: [0, 3]}
+""")
+```
+
+`distance: 0` from a random anchor picks any bus. In `fault_cleared_by_trip`, the line at distance 0 touches the faulted bus, so the trip isolates the fault.
+
+## Preview the draws
+
+The draw happens on the graph of the grid, so it can be inspected without running Dynawo. Datakit calls the same functions inside the pipeline, seeded per sample.
+
+```{python}
+from gridfm_datakit.dynamic.event_perturbation import draw_events, parse_event_perturbation
+from gridfm_datakit.dynamic.placement import EventGraph
+
+network = pp.network.load("../data/ieee14/IEEE14.iidm")
+graph = EventGraph.from_network(network)
+spec = parse_event_perturbation(event_perturbation, start_time=0.0, stop_time=10.0)
+
+rng = np.random.default_rng(7)
+preview = pd.concat(
+    [draw_events(spec, graph, rng).assign(draw=i) for i in range(8)], ignore_index=True
+)
+preview.round(3).set_index(["draw", "scenario"])
+```
+
+Every row is an event Dynawo will simulate, with its time and its drawn parameters written out.
+
+## Generate
+
+Six load scenarios, no topology change so that the events stand out, four event variants each. The configuration is the one from Part 3 with `event_perturbation` added, a shorter list of curves, and its own output folder.
+
+```{python}
+variables = pd.DataFrame(
+    [("Curve", f"_BUS{'_' * (5 - len(str(i)))}{i}_TN", "U_value") for i in range(1, 15)]
+    + [("Curve", "_GEN____1_SM", "generator_omegaPu_value")],
+    columns=["type", "model_id", "variables"],
+)
+variables.to_csv(work / "variables.csv", index=False)
+
+config = yaml.safe_load("""
+network:
+  name: IEEE14
+  source: file
+  reader: powsybl
+  file: ../data/ieee14/IEEE14.iidm
+load:
+  generator: agg_load_profile
+  agg_profile: default
+  scenarios: 6
+  sigma: 0.2
+  change_reactive_power: true
+  global_range: 0.4
+  max_scaling_factor: 4.0
+  step_size: 0.05
+  start_scaling_factor: 0.8
+topology_perturbation:
+  type: none
+generation_perturbation:
+  type: none
+admittance_perturbation:
+  type: none
+dynamic:
+  dynamic_solver: dynawo
+  input_files:
+    static_element_dynamic_models_file: ../data/ieee14/static_element_dynamic_models.csv
+    automation_systems_file: ../data/ieee14/automation_systems.csv
+    variables_file: outputs/part4/variables.csv
+  solver_parameters:
+    start_time: 0.0
+    stop_time: 10.0
+    parameters_file: ../data/ieee14/IEEE14.par
+    network_parameters_file: ../data/ieee14/IEEE14.par
+    network_parameters_id: Network
+    solver_type: IDA
+    solver_parameters_file: ../data/ieee14/IEEE14.par
+    solver_parameters_id: IDAOrder2
+  logging:
+    verbosity: warning
+settings:
+  mode: pf
+  pf_solver: powsybl
+  data_dir: outputs/part4/data
+  num_processes: 4
+  large_chunk_size: 6
+  overwrite: true
+  include_dc_res: false
+  enable_solver_logs: false
+  pf_fast: false
+  dcpf_fast: false
+  max_iter: 200
+  seed: 42
+""")
+config["dynamic"]["event_perturbation"] = event_perturbation
+```
+
+```{python}
+#| output: false
+from gridfm_datakit.dynamic.generate_dynamic import generate_dynamic_data
+
+generate_dynamic_data(config)
+```
+
+## What each sample went through
+
+`events.parquet` records every simulated event, keyed like the curves.
+
+```{python}
+root = Path("outputs/part4/data/IEEE14/raw/dynamic")
+KEYS = ["scenario_index", "perturbation_index", "event_index"]
+
+events = pd.read_parquet(root / "events.parquet")
+meta = json.loads((root / "metadata.json").read_text())
+store = zarr.open(str(root / "dynamic_results.zarr"), mode="r")
+bus = pd.read_parquet(root / "bus_data.parquet")
+
+slice_of = {
+    tuple(int(v) for v in key): i
+    for i, key in enumerate(zip(*(np.asarray(store[k]) for k in KEYS)))
+}
+
+
+def curve(key, name):
+    """Time and values of one variable for one sample, without the NaN padding."""
+    i = slice_of[key]
+    n = meta["timesteps_per_scenario"][i]
+    return store["time"][i, :n], store["curves"][i, meta["variable_names"].index(name), :n]
+
+
+print(len(slice_of), "samples")
+events.round(3).head(8)
+```
+
+```{python}
+kind = events.drop_duplicates(KEYS).set_index(KEYS).scenario
+kind.value_counts().rename("samples").to_frame()
+```
+
+## Responses by event type
+
+One panel per scenario. The lowest bus voltage across the grid, relative to its value before the event, shows how deep each disturbance cut.
+
+```{python}
+u_names = [name for name in meta["variable_names"] if name.endswith("U_value")]
+names = [s["name"] for s in event_perturbation["scenarios"]]
+
+fig, axes = plt.subplots(1, len(names), figsize=(12, 3.4), sharey=True)
+for ax, name, color in zip(axes, names, PALETTE):
+    for key in [k for k in slice_of if kind.get(k) == name]:
+        t = curve(key, u_names[0])[0]
+        u = np.array([curve(key, n)[1] for n in u_names])
+        ax.plot(t, (u / u[:, :1]).min(axis=0), color=color, linewidth=1.2, alpha=0.8)
+    ax.set(title=name.replace("_", " "), xlabel="time (s)", xlim=(0, 6))
+axes[0].set_ylabel("lowest bus voltage (pu of initial)")
+fig.tight_layout()
+```
+
+Faults dip deep and recover. Trips leave a lasting change. A fault cleared by a trip combines both, the sequence a protection system produces in the field. When the faulted bus hangs on a single line, the trip leaves it dead, which is the flat line at zero.
+
+## Initial state, event, trajectory
+
+Every sample now holds three aligned pieces: the Parquet initial state, the event record and the Zarr trajectory. Add the `topology_perturbation` of Part 3 and all three keys vary at once.
+
+```{python}
+key = list(slice_of)[5]
+print("sample", dict(zip(KEYS, key)))
+print("initial demand", round(bus.set_index(KEYS).loc[key].Pd.sum(), 1), "MW")
+events.set_index(KEYS).loc[[key], ["scenario", "event_name", "static_id", "start_time", "params"]]
+```
+
+## Your turn
+
+::: {.callout-tip .exercise title="Exercise · A fixed hot spot"}
+Add a fifth scenario, `voltage_step`, that changes the voltage set-point of generator 1 (`static_id: _GEN____1_SM`) by a value drawn uniformly between -0.05 and 0.05 pu. Preview twenty draws with the new spec and count how often each scenario comes up.
+:::
+
+```{python}
+#| tags: [solution]
+#| code-fold: true
+#| code-summary: "Show a solution"
+voltage_step = yaml.safe_load("""
+name: voltage_step
+start_time: {distribution: uniform, low: 0.5, high: 2.0}
+events:
+  - type: ReferenceVoltageVariation
+    target: {static_id: _GEN____1_SM}
+    params:
+      delta_u: {distribution: uniform, low: -0.05, high: 0.05}
+""")
+extended = {**event_perturbation, "scenarios": event_perturbation["scenarios"] + [voltage_step]}
+spec = parse_event_perturbation(extended, start_time=0.0, stop_time=10.0)
+
+rng = np.random.default_rng(0)
+draws = [draw_events(spec, graph, rng) for _ in range(20)]
+pd.Series([d.scenario.iloc[0] for d in draws]).value_counts()
+```
+
+::: {.callout-note title="Where to go next"}
+The [dynamic simulation manual](https://github.com/yemine0x01/gridfm-datakit/blob/gfm6wt/docs/manual/dynamic_simulation.md) of GridFM-Datakit documents every key, the output layout and the known limits. Back to the [overview](index.qmd).
+:::
