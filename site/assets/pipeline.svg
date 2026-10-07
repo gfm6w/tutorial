@@ -65,7 +65,7 @@
   <path class="edge" d="M323 155 H344"/>
   <path class="edge" d="M488 155 H509"/>
   <path class="edge" d="M648 155 H669"/>
-  <path class="edge" d="M808 140 C828 140 822 52 844 52"/>
+  <path class="edge" d="M740 107 V52 H844"/>
   <path class="edge" d="M740 203 V229"/>
   <path class="edge" d="M818 278 H844"/>
 
