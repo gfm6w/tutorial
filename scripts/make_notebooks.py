@@ -4,7 +4,8 @@ A code cell tagged `solution` becomes an empty cell followed by the solution in
 a <details> block. Quarto markup becomes plain Markdown: callouts turn into
 quotes, chip spans into a dotted line, div fences and image attributes go,
 asset paths point into site/, links between parts point at the notebooks.
-`#|` cell options are dropped.
+`#|` cell options are dropped, cell IDs are numbered so a rebuild only diffs
+what changed.
 
 Usage: python scripts/make_notebooks.py [NAME.qmd ...]
 """
@@ -124,6 +125,8 @@ def convert(name):
     tail = markdown(body[position:])
     if tail:
         cells.append(nbformat.v4.new_markdown_cell(tail))
+    for i, cell in enumerate(cells):
+        cell.id = f"cell-{i:03d}"
     notebook = nbformat.v4.new_notebook(cells=cells)
     notebook.metadata["kernelspec"] = {
         "name": "python3",
