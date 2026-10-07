@@ -79,7 +79,7 @@ grid.get_network_area_diagram(busiest, depth=2)
 ```{python}
 #| echo: false
 busiest = grid.get_loads().groupby("voltage_level_id").p0.sum().idxmax()
-area_diagram(grid, busiest, depth=2, spread=0.5)
+area_diagram(grid, busiest, depth=2, spread=0.5, height=640)
 ```
 
 ## Exchange formats

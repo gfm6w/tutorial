@@ -56,4 +56,4 @@ bash scripts/build.sh          # execute the pages, render the site, regenerate 
 
 - IEEE 14-bus network, Dynawo input tables and parameters from the GridFM-Datakit dynamic example (Apache-2.0). The `IDAOrder2` solver set follows the Dynawo IEEE14 fault example.
 - PEGASE case from [PGLib-OPF](https://github.com/power-grid-lib/pglib-opf) (CC BY 4.0), originally published with MATPOWER by C. Josz, S. Fliscounakis, J. Maeght and P. Panciatici.
-- Built with PowSyBl and Dynawo, projects of [LF Energy](https://lfenergy.org). Fonts Space Grotesk, IBM Plex Sans and JetBrains Mono, under the SIL Open Font License.
+- Built with PowSyBl and Dynawo, projects of [LF Energy](https://lfenergy.org). Fonts Space Grotesk, IBM Plex Sans and JetBrains Mono, under the SIL Open Font License. Zoomable diagrams with [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) (BSD-2-Clause).

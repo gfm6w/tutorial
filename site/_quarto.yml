@@ -51,6 +51,8 @@ format:
   html:
     theme: [cosmo, theme/porto.scss]
     css: theme/fonts.css
+    include-in-header:
+      text: <script src="assets/js/svg-pan-zoom.min.js"></script>
     title-block-banner: true
     toc: true
     toc-depth: 2
