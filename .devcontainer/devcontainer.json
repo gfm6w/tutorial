@@ -1,0 +1,23 @@
+{
+  "name": "GridFM Porto tutorial",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "ms-toolsai.jupyter"],
+      "settings": {
+        "python.defaultInterpreterPath": "/home/vscode/venv/bin/python"
+      }
+    },
+    "codespaces": {
+      "openFiles": ["notebooks/01-powsybl-dynawo.ipynb"]
+    }
+  },
+  "postCreateCommand": "python scripts/check_setup.py"
+}
