@@ -256,14 +256,17 @@ One panel per scenario. The lowest bus voltage across the grid, relative to its 
 u_names = [name for name in meta["variable_names"] if name.endswith("U_value")]
 names = [s["name"] for s in event_perturbation["scenarios"]]
 
-fig, axes = plt.subplots(1, len(names), figsize=(12, 3.4), sharey=True)
-for ax, name, color in zip(axes, names, PALETTE):
+fig, axes = plt.subplots(2, 2, figsize=(10, 6.4), sharex=True, sharey=True)
+for ax, name, color in zip(axes.flat, names, PALETTE):
     for key in [k for k in slice_of if kind.get(k) == name]:
         t = curve(key, u_names[0])[0]
         u = np.array([curve(key, n)[1] for n in u_names])
         ax.plot(t, (u / u[:, :1]).min(axis=0), color=color, linewidth=1.2, alpha=0.8)
-    ax.set(title=name.replace("_", " "), xlabel="time (s)", xlim=(0, 6))
-axes[0].set_ylabel("lowest bus voltage (pu of initial)")
+    ax.set(title=name.replace("_", " "), xlim=(0, 6))
+for ax in axes[1]:
+    ax.set_xlabel("time (s)")
+for ax in axes[:, 0]:
+    ax.set_ylabel("lowest bus voltage\n(pu of initial)")
 fig.tight_layout()
 ```
 
