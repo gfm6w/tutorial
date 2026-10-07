@@ -1,0 +1,64 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - assets/**
+  render:
+    - index.qmd
+    - setup.qmd
+    - 01-powsybl-dynawo.qmd
+    - 02-steady-state.qmd
+    - 03-dynamic-initial-state.qmd
+    - 04-dynamic-events.qmd
+
+execute:
+  freeze: auto
+  daemon: false
+  warning: false
+
+website:
+  title: "PowSyBl & Dynawo in Practice"
+  description: "Generating steady-state and dynamic power system datasets for grid foundation models. GridFM tutorial, Porto, October 2026."
+  site-url: https://gfm6w.github.io
+  repo-url: https://github.com/gfm6w/tutorial
+  favicon: assets/logos/gridfm-icon.png
+  page-navigation: true
+  back-to-top-navigation: true
+  navbar:
+    logo: assets/logos/gridfm-icon.png
+    left:
+      - href: index.qmd
+        text: Overview
+      - href: setup.qmd
+        text: Setup
+      - href: 01-powsybl-dynawo.qmd
+        text: "1 · PowSyBl & Dynawo"
+      - href: 02-steady-state.qmd
+        text: "2 · Steady state"
+      - href: 03-dynamic-initial-state.qmd
+        text: "3 · Initial states"
+      - href: 04-dynamic-events.qmd
+        text: "4 · Dynamic events"
+    right:
+      - icon: github
+        href: https://github.com/gfm6w/tutorial
+        aria-label: Tutorial repository
+  page-footer:
+    left: "GridFM 2026 · Porto · Faculty of Engineering, University of Porto"
+    right: "Built with [PowSyBl](https://www.powsybl.org), [Dynawo](https://dynawo.github.io) and [GridFM-Datakit](https://github.com/gridfm/gridfm-datakit)"
+
+format:
+  html:
+    theme: [cosmo, theme/porto.scss]
+    css: theme/fonts.css
+    title-block-banner: true
+    toc: true
+    toc-depth: 2
+    toc-title: "On this page"
+    code-copy: true
+    code-overflow: wrap
+    highlight-style: github
+    fig-dpi: 144
+    fig-format: retina
+    smooth-scroll: true
+    link-external-newwindow: true
