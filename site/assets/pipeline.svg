@@ -1,75 +1,75 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 330" font-family="Space Grotesk, IBM Plex Sans, system-ui, sans-serif" role="img" aria-label="GridFM-Datakit pipeline with PowSyBl and Dynawo">
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" markerUnits="strokeWidth" orient="auto">
       <path d="M0 0 L10 5 L0 10 z" fill="#5a6b7e"/>
     </marker>
     <style>
-      .box { rx: 12; ry: 12; stroke-width: 1.5; }
-      .t { font-size: 15px; font-weight: 600; fill: #0a1f33; }
+      .box { stroke-width: 1.5; }
+      .t { font-size: 15px; font-weight: 600; fill: #10263c; }
       .s { font-size: 11.5px; fill: #3d4f63; font-family: IBM Plex Sans, system-ui, sans-serif; }
       .tag { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; }
-      .edge { stroke: #5a6b7e; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .edge { stroke: #5a6b7e; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
     </style>
   </defs>
 
   <rect x="0" y="0" width="1000" height="330" fill="#ffffff"/>
 
-  <rect class="box" x="12" y="104" width="150" height="92" fill="#f7f9fb" stroke="#c4d0dc"/>
-  <text class="tag" x="26" y="126" fill="#5a6b7e">INPUT</text>
-  <text class="t" x="26" y="148">Grid model</text>
-  <text class="s" x="26" y="168">CGMES · XIIDM · PSS/E</text>
-  <text class="s" x="26" y="184">UCTE · MATPOWER</text>
+  <rect class="box" x="10" y="110" width="145" height="90" rx="10" fill="#f6f8fa" stroke="#c4d0dc"/>
+  <text class="tag" x="24" y="132" fill="#5a6b7e">INPUT</text>
+  <text class="t" x="24" y="154">Grid model</text>
+  <text class="s" x="24" y="174">CGMES · XIIDM · PSS/E</text>
+  <text class="s" x="24" y="189">UCTE · MATPOWER</text>
 
-  <rect class="box" x="192" y="104" width="140" height="92" fill="#e8f3fa" stroke="#1486c2"/>
-  <text class="tag" x="206" y="126" fill="#1486c2">POWSYBL</text>
-  <text class="t" x="206" y="148">Reader</text>
-  <text class="s" x="206" y="168">pypowsybl network</text>
-  <text class="s" x="206" y="184">IDs kept end to end</text>
+  <rect class="box" x="185" y="110" width="135" height="90" rx="10" fill="#e8f3fa" stroke="#1486c2"/>
+  <text class="tag" x="199" y="132" fill="#1486c2">POWSYBL</text>
+  <text class="t" x="199" y="154">Reader</text>
+  <text class="s" x="199" y="174">pypowsybl network</text>
+  <text class="s" x="199" y="189">IDs kept end to end</text>
 
-  <rect class="box" x="362" y="104" width="150" height="92" fill="#e6f5f3" stroke="#0f9b8e"/>
-  <text class="tag" x="376" y="126" fill="#0b7d72">DATAKIT</text>
-  <text class="t" x="376" y="148">Perturb</text>
-  <text class="s" x="376" y="168">load scenarios</text>
-  <text class="s" x="376" y="184">topology N-k</text>
+  <rect class="box" x="350" y="110" width="135" height="90" rx="10" fill="#e6f4f5" stroke="#0f7f8c"/>
+  <text class="tag" x="364" y="132" fill="#0f7f8c">DATAKIT</text>
+  <text class="t" x="364" y="154">Perturb</text>
+  <text class="s" x="364" y="174">load scenarios</text>
+  <text class="s" x="364" y="189">topology N-k</text>
 
-  <rect class="box" x="542" y="104" width="130" height="92" fill="#e6f5f3" stroke="#0f9b8e"/>
-  <text class="tag" x="556" y="126" fill="#0b7d72">DATAKIT</text>
-  <text class="t" x="556" y="148">Dispatch</text>
-  <text class="s" x="556" y="168">AC OPF in</text>
-  <text class="s" x="556" y="184">PowerModels.jl</text>
+  <rect class="box" x="515" y="110" width="130" height="90" rx="10" fill="#e6f4f5" stroke="#0f7f8c"/>
+  <text class="tag" x="529" y="132" fill="#0f7f8c">DATAKIT</text>
+  <text class="t" x="529" y="154">Dispatch</text>
+  <text class="s" x="529" y="174">AC OPF in</text>
+  <text class="s" x="529" y="189">PowerModels.jl</text>
 
-  <rect class="box" x="702" y="104" width="130" height="92" fill="#e8f3fa" stroke="#1486c2"/>
-  <text class="tag" x="716" y="126" fill="#1486c2">POWSYBL</text>
-  <text class="t" x="716" y="148">Power flow</text>
-  <text class="s" x="716" y="168">OpenLoadFlow</text>
-  <text class="s" x="716" y="184">balanced state</text>
+  <rect class="box" x="675" y="110" width="130" height="90" rx="10" fill="#e8f3fa" stroke="#1486c2"/>
+  <text class="tag" x="689" y="132" fill="#1486c2">POWSYBL</text>
+  <text class="t" x="689" y="154">Power flow</text>
+  <text class="s" x="689" y="174">OpenLoadFlow</text>
+  <text class="s" x="689" y="189">balanced state</text>
 
-  <rect class="box" x="862" y="20" width="126" height="78" fill="#fdf3e4" stroke="#e07a1f"/>
-  <text class="tag" x="876" y="42" fill="#b35f12">PART 2</text>
-  <text class="t" x="876" y="64">Steady state</text>
-  <text class="s" x="876" y="84">Parquet snapshots</text>
+  <rect class="box" x="850" y="15" width="140" height="75" rx="10" fill="#fdf3e4" stroke="#e07a1f"/>
+  <text class="tag" x="864" y="37" fill="#b35f12">PART 2</text>
+  <text class="t" x="864" y="59">Steady state</text>
+  <text class="s" x="864" y="78">Parquet snapshots</text>
 
-  <rect class="box" x="702" y="232" width="150" height="86" fill="#f8e9ef" stroke="#a8285a"/>
-  <text class="tag" x="716" y="254" fill="#a8285a">DYNAWO</text>
-  <text class="t" x="716" y="276">Time domain</text>
-  <text class="s" x="716" y="296">models · events</text>
-  <text class="s" x="716" y="311">file or random</text>
+  <rect class="box" x="675" y="235" width="140" height="85" rx="10" fill="#f8e9ef" stroke="#a8285a"/>
+  <text class="tag" x="689" y="257" fill="#a8285a">DYNAWO</text>
+  <text class="t" x="689" y="279">Time domain</text>
+  <text class="s" x="689" y="298">models · events</text>
+  <text class="s" x="689" y="313">file or random</text>
 
-  <rect class="box" x="874" y="232" width="114" height="86" fill="#fdf3e4" stroke="#e07a1f"/>
-  <text class="tag" x="886" y="254" fill="#b35f12">PARTS 3 · 4</text>
-  <text class="t" x="886" y="276">Trajectories</text>
-  <text class="s" x="886" y="296">Zarr curves</text>
-  <text class="s" x="886" y="311">events.parquet</text>
+  <rect class="box" x="850" y="235" width="140" height="85" rx="10" fill="#fdf3e4" stroke="#e07a1f"/>
+  <text class="tag" x="864" y="257" fill="#b35f12">PARTS 3 · 4</text>
+  <text class="t" x="864" y="279">Trajectories</text>
+  <text class="s" x="864" y="298">Zarr curves</text>
+  <text class="s" x="864" y="313">events.parquet</text>
 
-  <path class="edge" d="M162 150 H188"/>
-  <path class="edge" d="M332 150 H358"/>
-  <path class="edge" d="M512 150 H538"/>
-  <path class="edge" d="M672 150 H698"/>
-  <path class="edge" d="M832 136 C850 136 846 59 858 59"/>
-  <path class="edge" d="M767 196 V228"/>
-  <path class="edge" d="M852 275 H870"/>
+  <path class="edge" d="M158 155 H179"/>
+  <path class="edge" d="M323 155 H344"/>
+  <path class="edge" d="M488 155 H509"/>
+  <path class="edge" d="M648 155 H669"/>
+  <path class="edge" d="M808 140 C828 140 822 52 844 52"/>
+  <path class="edge" d="M740 203 V229"/>
+  <path class="edge" d="M818 278 H844"/>
 
-  <text class="s" x="362" y="236" font-style="italic">One sample per load scenario,</text>
-  <text class="s" x="362" y="252" font-style="italic">topology variant and event variant,</text>
-  <text class="s" x="362" y="268" font-style="italic">joined on the same three keys.</text>
+  <text class="s" x="350" y="244" font-style="italic">One sample per load scenario,</text>
+  <text class="s" x="350" y="260" font-style="italic">topology variant and event variant,</text>
+  <text class="s" x="350" y="276" font-style="italic">joined on the same three keys.</text>
 </svg>
