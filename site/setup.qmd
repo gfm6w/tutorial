@@ -1,0 +1,92 @@
+---
+title: "Setup"
+subtitle: "Run the notebooks yourself"
+description: "Three ways in, from zero installation to a full local setup. Do it before the session, the downloads take a few minutes."
+toc: true
+---
+
+::: {.session-strip}
+[10 min, before the session]{.chip} [Python 3.10 to 3.12 · Julia · Dynawo 1.7.0]{.chip}
+:::
+
+The notebooks need three things next to Python. **pypowsybl** comes from pip. **Julia with PowerModels.jl** solves the optimal power flow inside GridFM-Datakit and installs itself on first use. **Dynawo** is a native simulator distributed as a zip archive. Pick the route that suits your machine.
+
+| Route | Works on | Effort |
+|---|---|---|
+| [GitHub Codespaces](#codespaces) | Any browser | One click, a few minutes to build |
+| [Dev container](#container) | Any OS with Docker | One command |
+| [Local install](#local) | Linux, Windows through WSL 2 | About ten minutes |
+
+::: {.callout-note title="macOS"}
+Dynawo ships Linux and Windows builds only. On a Mac, use Codespaces or the dev container.
+:::
+
+## GitHub Codespaces {#codespaces}
+
+Open the repository in a codespace. The dev container installs Python, Julia, PowerModels and Dynawo, then opens the notebooks.
+
+[Open in GitHub Codespaces](https://codespaces.new/gfm6w/tutorial?quickstart=1){.btn .btn-primary}
+
+The first build takes several minutes. Start it before the session.
+
+## Dev container {#container}
+
+With Docker and VS Code, clone the repository and choose **Reopen in Container**. Without VS Code, build and run the image directly.
+
+```bash
+git clone https://github.com/gfm6w/tutorial.git
+cd tutorial
+docker build -t gfm6w-tutorial -f .devcontainer/Dockerfile .
+docker run --rm -p 8888:8888 -v "$PWD":/workspace gfm6w-tutorial
+```
+
+Then open the link printed by Jupyter.
+
+## Local install {#local}
+
+### 1. Python packages
+
+```bash
+git clone https://github.com/gfm6w/tutorial.git
+cd tutorial
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+The requirements pin GridFM-Datakit to the `gfm6wt` branch, which carries the dynamic event randomization and the PowSyBl reader fixes used here.
+
+### 2. Julia and PowerModels
+
+```bash
+gridfm_datakit setup_pm
+```
+
+This downloads Julia if needed, then PowerModels.jl and Ipopt. Count a few minutes.
+
+### 3. Dynawo
+
+```bash
+bash scripts/install_dynawo.sh
+```
+
+The script downloads Dynawo 1.7.0 into `~/dynawo` and declares it to PowSyBl in `~/.itools/config.yml`. To use an existing installation, write that file yourself.
+
+```yaml
+dynawo:
+  homeDir: /path/to/dynawo
+  debug: false
+```
+
+### 4. Check
+
+```bash
+python scripts/check_setup.py
+jupyter lab notebooks/
+```
+
+`check_setup.py` prints the versions found and runs a ten-second Dynawo simulation. If it ends with `All set`, you are ready.
+
+## Follow along without installing
+
+Every page of this site was executed end to end, so all outputs are visible. You can read along and run the notebooks later.

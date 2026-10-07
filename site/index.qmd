@@ -1,0 +1,68 @@
+---
+title: "PowSyBl & Dynawo in Practice"
+subtitle: "GridFM 2026 · Porto · Tutorial"
+description: "Generating steady-state and dynamic power system datasets for grid foundation models."
+toc: false
+page-layout: article
+---
+
+::: {.hero-lead}
+A hands-on tutorial on **PowSyBl** and **Dynawo**, two open-source, industrial-grade tools for power system simulation, and on how they combine in **GridFM-Datakit** to generate steady-state and dynamic datasets, including randomized initial states and randomized dynamic events, for training grid foundation models. No prior experience with PowSyBl or Dynawo is required.
+:::
+
+::: {.btn-row}
+[Set up your machine](setup.qmd){.primary} [Notebooks on GitHub](https://github.com/gfm6w/tutorial) [Conference page](https://gridfm.org/porto/)
+:::
+
+## Programme
+
+```{=html}
+<div class="agenda">
+<a class="session" href="01-powsybl-dynawo.html" style="--accent:#1486c2">
+<span class="num">Part 1</span>
+<span class="name">PowSyBl & Dynawo</span>
+<span class="meta">What they are, and why GridFM-Datakit integrates them.</span>
+<span class="dur">15 min</span>
+</a>
+<a class="session" href="02-steady-state.html" style="--accent:#e07a1f">
+<span class="num">Part 2</span>
+<span class="name">Steady-state datasets</span>
+<span class="meta">From a real transmission grid to power flow samples, with PowSyBl.</span>
+<span class="dur">20 min</span>
+</a>
+<a class="session" href="03-dynamic-initial-state.html" style="--accent:#0f9b8e">
+<span class="num">Part 3</span>
+<span class="name">Randomized initial states</span>
+<span class="meta">Dynawo trajectories from many operating points and topologies.</span>
+<span class="dur">20 min</span>
+</a>
+<a class="session" href="04-dynamic-events.html" style="--accent:#a8285a">
+<span class="num">Part 4</span>
+<span class="name">Randomized dynamic events</span>
+<span class="meta">Faults, trips and set-point steps drawn per sample.</span>
+<span class="dur">20 min</span>
+</a>
+</div>
+```
+
+## How the tutorial works
+
+Each part is a Jupyter notebook. Run it cell by cell and fill in the exercises, or read the rendered page on this site, which shows every output. The notebooks live in [`notebooks/`](https://github.com/gfm6w/tutorial/tree/main/notebooks) of the tutorial repository, and the pages here are built from the same sources.
+
+::: {.callout-tip title="No installation? Follow along anyway"}
+Every page on this site was executed end to end, so all figures and tables are visible without running anything. The [setup page](setup.qmd) gives three ways to run the notebooks yourself, including a ready-made container.
+:::
+
+## Companion talk
+
+This tutorial pairs with the conference talk **Enabling Time-Domain Foundation Models with PowSyBl and Dynawo**, which presents the integration of both tools into the Open GridFM DataKit and its role for time-domain grid foundation models.
+
+```{=html}
+<div class="logo-row">
+<img src="assets/logos/gridfm-logo.svg" style="height:46px" alt="GridFM">
+<img src="assets/logos/powsybl-logo.svg" style="height:40px" alt="PowSyBl">
+<img src="assets/logos/dynawo-logo.png" style="height:64px" alt="Dynawo">
+<img src="assets/logos/lf-energy-logo.svg" style="height:28px" alt="LF Energy">
+<img src="assets/logos/artelys-logo.png" style="height:40px" alt="Artelys">
+</div>
+```
