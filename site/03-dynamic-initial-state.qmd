@@ -265,10 +265,9 @@ print("Y", Y.shape, "(samples, curves, time steps)")
 For every sample, compute the lowest rotor speed of generator 1 during the run. Plot it against the total demand of the initial state, one colour per `perturbation_index`. Do some topologies stand out?
 :::
 
+::: {.callout-note .solution collapse="true" title="Show a solution"}
 ```{python}
 #| tags: [solution]
-#| code-fold: true
-#| code-summary: "Show a solution"
 nadir = pd.Series(
     {key: curve(key, "_GEN____1_SM_generator_omegaPu_value")[1].min() for key in slice_of}
 )
@@ -281,6 +280,7 @@ for p, group in table.groupby("perturbation_index"):
 ax.set(title="Speed nadir of generator 1", xlabel="total demand (MW)", ylabel="pu")
 ax.legend();
 ```
+:::
 
 ::: {.callout-note title="Next"}
 [Part 4](04-dynamic-events.qmd) draws the disturbance itself at random, with its type, place, time and severity.

@@ -214,6 +214,13 @@ details.code-fold > summary {
   }
 }
 
+.callout.solution {
+  border-left-color: #c4cfdb !important;
+  .callout-header {
+    background-color: $paper;
+  }
+}
+
 .cell-output-display svg,
 .cell-output-display img[src$=".svg"] {
   width: 100% !important;

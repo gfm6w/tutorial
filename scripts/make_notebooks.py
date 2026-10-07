@@ -1,11 +1,11 @@
 """Generate the participant notebooks of notebooks/ from the Quarto sources of site/.
 
 A code cell tagged `solution` becomes an empty cell followed by the solution in
-a <details> block. Quarto markup becomes plain Markdown: callouts turn into
-quotes, chip spans into a dotted line, div fences and image attributes go,
-asset paths point into site/, links between parts point at the notebooks.
-`#|` cell options are dropped, cell IDs are numbered so a rebuild only diffs
-what changed.
+a <details> block, and its collapsed callout goes. Cells with `eval: false` are
+dropped. Quarto markup becomes plain Markdown: callouts turn into quotes, chip
+spans into a dotted line, div fences and image attributes go, asset paths point
+into site/, links between parts point at the notebooks. `#|` options are
+dropped and cell IDs are numbered, so a rebuild only diffs what changed.
 
 Usage: python scripts/make_notebooks.py [NAME.qmd ...]
 """
@@ -55,6 +55,8 @@ def markdown(text):
     lines, quote = [], False
     for line in text.splitlines():
         callout = CALLOUT.match(line)
+        if callout and ".solution" in callout.group(2):
+            continue
         if callout:
             kind, attrs = callout.groups()
             title = TITLE.search(attrs)

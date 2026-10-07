@@ -289,10 +289,9 @@ events.set_index(KEYS).loc[[key], ["scenario", "event_name", "static_id", "start
 Add a fifth scenario, `voltage_step`, that changes the voltage set-point of generator 1 (`static_id: _GEN____1_SM`) by a value drawn uniformly between -0.05 and 0.05 pu. Preview twenty draws with the new spec and count how often each scenario comes up.
 :::
 
+::: {.callout-note .solution collapse="true" title="Show a solution"}
 ```{python}
 #| tags: [solution]
-#| code-fold: true
-#| code-summary: "Show a solution"
 voltage_step = yaml.safe_load("""
 name: voltage_step
 start_time: {distribution: uniform, low: 0.5, high: 2.0}
@@ -309,6 +308,7 @@ rng = np.random.default_rng(0)
 draws = [draw_events(spec, graph, rng) for _ in range(20)]
 pd.Series([d.scenario.iloc[0] for d in draws]).value_counts()
 ```
+:::
 
 ::: {.callout-note title="Where to go next"}
 The [dynamic simulation manual](https://github.com/yemine0x01/gridfm-datakit/blob/gfm6wt/docs/manual/dynamic_simulation.md) of GridFM-Datakit documents every key, the output layout and the known limits. Back to the [overview](index.qmd).

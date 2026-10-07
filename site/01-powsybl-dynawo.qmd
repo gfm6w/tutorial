@@ -179,10 +179,9 @@ The fault collapses the voltage at bus 4, the machines accelerate during the fau
 Replace the fault by the disconnection of generator 2 at 1 s with `events.add_disconnection(static_id=..., start_time=...)`. Run the simulation for 30 s and plot the rotor speed of generator 1. How does the response differ from the fault?
 :::
 
+::: {.callout-note .solution collapse="true" title="Show a solution"}
 ```{python}
 #| tags: [solution]
-#| code-fold: true
-#| code-summary: "Show a solution"
 network = pp.network.load("../data/ieee14/IEEE14.iidm")
 pp.loadflow.run_ac(network)
 
@@ -201,6 +200,7 @@ ax = curves["_GEN____1_SM_generator_omegaPu_value"].plot(color=PALETTE[0])
 ax.set(title="Rotor speed of generator 1 after tripping generator 2",
        xlabel="time (s)", ylabel="pu");
 ```
+:::
 
 Losing a machine is a lasting power imbalance. The speed drops and settles at a new value set by the governors, where a cleared fault leaves the system where it started.
 
