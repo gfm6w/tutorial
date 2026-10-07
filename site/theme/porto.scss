@@ -214,6 +214,12 @@ details.code-fold > summary {
   }
 }
 
+.cell-output-display svg,
+.cell-output-display img[src$=".svg"] {
+  width: 100% !important;
+  height: auto !important;
+}
+
 /* Landing page */
 
 .hero-lead {

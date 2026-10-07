@@ -22,7 +22,7 @@ jupyter: python3
 import sys
 
 sys.path.insert(0, "..")
-from helpers import PALETTE, setup
+from helpers import PALETTE, area_diagram, setup
 
 setup()
 ```
@@ -79,7 +79,13 @@ network.get_buses()[["v_mag", "v_angle"]].round(2).T
 PowSyBl also draws the grid. The network area diagram shows each voltage level with its flows.
 
 ```{python}
+#| eval: false
 network.get_network_area_diagram()
+```
+
+```{python}
+#| echo: false
+area_diagram(network)
 ```
 
 ## A first Dynawo simulation

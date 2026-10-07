@@ -22,7 +22,7 @@ jupyter: python3
 import sys
 
 sys.path.insert(0, "..")
-from helpers import MUTED, PALETTE, setup
+from helpers import MUTED, PALETTE, area_diagram, setup
 
 setup()
 ```
@@ -71,8 +71,15 @@ ax.set(title="Voltage magnitude, base case", xlabel="pu", ylabel="buses");
 The network area diagram around the most loaded substation shows the flows.
 
 ```{python}
+#| eval: false
 busiest = grid.get_loads().groupby("voltage_level_id").p0.sum().idxmax()
 grid.get_network_area_diagram(busiest, depth=2)
+```
+
+```{python}
+#| echo: false
+busiest = grid.get_loads().groupby("voltage_level_id").p0.sum().idxmax()
+area_diagram(grid, busiest, depth=2, spread=0.5)
 ```
 
 ## Exchange formats

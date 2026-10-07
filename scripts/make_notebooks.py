@@ -110,7 +110,7 @@ def convert(name):
             cells.append(nbformat.v4.new_markdown_cell(text))
         position = chunk.end()
         opts, code = options(chunk.group(1))
-        if opts.get("include") is False:
+        if opts.get("include") is False or opts.get("eval") is False:
             continue
         if "solution" in (opts.get("tags") or []):
             cells.append(nbformat.v4.new_code_cell("# Your turn\n"))
