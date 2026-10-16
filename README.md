@@ -12,7 +12,7 @@ Hands-on tutorial on [PowSyBl](https://www.powsybl.org) and [Dynawo](https://dyn
 | Part | Topic | Time | Notebook | Page |
 |---|---|---|---|---|
 | 1 | PowSyBl & Dynawo, what they are and why GridFM-Datakit integrates them | 15 min | [01-powsybl-dynawo.ipynb](notebooks/01-powsybl-dynawo.ipynb) | [view](https://gfm6w.github.io/01-powsybl-dynawo.html) |
-| 2 | Steady-state datasets from a real grid with PowSyBl | 20 min | [02-steady-state.ipynb](notebooks/02-steady-state.ipynb) | [view](https://gfm6w.github.io/02-steady-state.html) |
+| 2 | Steady-state datasets from a transmission grid with PowSyBl | 20 min | [02-steady-state.ipynb](notebooks/02-steady-state.ipynb) | [view](https://gfm6w.github.io/02-steady-state.html) |
 | 3 | Dynamic datasets with randomized initial states (Dynawo) | 20 min | [03-dynamic-initial-state.ipynb](notebooks/03-dynamic-initial-state.ipynb) | [view](https://gfm6w.github.io/03-dynamic-initial-state.html) |
 | 4 | Dynamic datasets with randomized dynamic events (Dynawo) | 20 min | [04-dynamic-events.ipynb](notebooks/04-dynamic-events.ipynb) | [view](https://gfm6w.github.io/04-dynamic-events.html) |
 
