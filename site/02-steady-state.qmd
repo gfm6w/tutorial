@@ -167,13 +167,26 @@ print(bus.scenario.nunique(), "samples from", bus.load_scenario_idx.nunique(), "
 bus.head()
 ```
 
-Each load scenario is a point on a yearly load curve, with local noise on every bus.
+Each load scenario is one step of an aggregate yearly load profile, scaled into the range the OPF can serve, with local noise on every bus. The topology variants of a load scenario share its demand, so one sample per load scenario is enough.
 
 ```{python}
-demand = bus.groupby("load_scenario_idx").Pd.sum()
-ax = demand.plot(marker="o", markersize=4, color=PALETTE[0])
+demand = (
+    bus.groupby(["load_scenario_idx", "scenario"]).Pd.sum()
+    .groupby("load_scenario_idx").first()
+)
+base = grid.get_loads().p0.sum()
+
+fig, ax = plt.subplots(figsize=(9, 3.2))
+ax.axhline(base, color=MUTED, linestyle="--", linewidth=1)
+ax.annotate("base case", (demand.index[-1], base), xytext=(0, 4),
+            textcoords="offset points", ha="right", color=MUTED, fontsize=9)
+ax.plot(demand, color=PALETTE[0], marker="o", markersize=5,
+        markeredgecolor="white", markeredgewidth=1)
+ax.yaxis.set_major_formatter("{x:,.0f}")
 ax.set(title="Total demand per load scenario", xlabel="load scenario", ylabel="MW");
 ```
+
+The 40 scenarios are the first 40 steps of the profile, all lighter than the base case.
 
 The outages spread the voltages and push some branches over their rating.
 
