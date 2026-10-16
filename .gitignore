@@ -6,3 +6,4 @@ site/_site/
 site/.quarto/
 site/*.quarto_ipynb
 site/*_files/
+*.deb

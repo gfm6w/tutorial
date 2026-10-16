@@ -14,6 +14,7 @@ jupyter: python3
 
 - Place PowSyBl and Dynawo in the GridFM-Datakit pipeline.
 - Load a grid, solve a power flow and draw it with pypowsybl.
+- Move a grid between exchange formats and see what each one keeps.
 - Run a first Dynawo time-domain simulation from Python and plot it.
 :::
 
@@ -36,7 +37,7 @@ Both projects started at RTE, the French transmission system operator, and are d
 | What | Framework to model, exchange and simulate grids | Time-domain simulator, RMS (phasor) |
 | Core | Java, with the Python binding **pypowsybl** | C++ solver, Modelica models compiled ahead of time |
 | Grid formats | CGMES, UCTE, PSS/E, XIIDM, MATPOWER | Reads the grid from PowSyBl |
-| Simulations | Load flow (OpenLoadFlow), security analysis, sensitivities, short circuit | Short-term stability (DynaSwing), long-term voltage stability (DynaWaltz), steady state with automata (DynaFlow) |
+| Simulations | Load flow (OpenLoadFlow), security analysis, sensitivities, short circuit, remedial action optimizer | Short-term stability (DynaSwing), long-term stability (DynaWaltz), steady state with automata (DynaFlow) |
 | Home | [powsybl.org](https://www.powsybl.org), an LF Energy project | [dynawo.github.io](https://dynawo.github.io) |
 
 ![](assets/logos/powsybl-logo.svg){width=180} &nbsp;&nbsp;&nbsp; ![](assets/logos/dynawo-logo.png){width=150} &nbsp;&nbsp;&nbsp; ![](assets/logos/lf-energy-logo.svg){width=150}
@@ -76,6 +77,34 @@ print(result[0].status_text, "in", result[0].iteration_count, "iterations")
 network.get_buses()[["v_mag", "v_angle"]].round(2).T
 ```
 
+PowSyBl models equipment in detail, and OpenLoadFlow can control it. On a copy of the grid, the ratio tap changer of the transformer between buses 4 and 9 starts at its lowest tap and regulates the voltage of bus 9 to 14.3 kV.
+
+```{python}
+regulated = pp.network.load("../data/ieee14/IEEE14.iidm")
+transformer = "_BUS____4-BUS____9-1_PT"
+regulated.update_ratio_tap_changers(
+    id=transformer,
+    tap=1,
+    oltc=True,
+    regulated_side="TWO",
+    target_v=14.3,
+    target_deadband=0.1,
+)
+regulated.update_ratio_tap_changers(id=transformer, regulating=True)
+result = pp.loadflow.run_ac(
+    regulated, pp.loadflow.Parameters(transformer_voltage_control_on=True)
+)
+print(result[0].status_text, "in", result[0].iteration_count, "iterations")
+
+tap = regulated.get_ratio_tap_changers().loc[transformer]
+print("tap", tap.tap, "solved at", tap.solved_tap_position)
+pd.DataFrame(
+    {"base case": network.get_buses().v_mag, "regulated": regulated.get_buses().v_mag}
+).loc[["_BUS____9_VL_0"]].round(2)
+```
+
+The load flow leaves `tap` at its set value and reports the position it chose in `solved_tap_position`. The base case `network` is untouched, so the rest of this part runs on the original grid.
+
 PowSyBl also draws the grid. The network area diagram shows each voltage level with its flows.
 
 ```{python}
@@ -87,6 +116,44 @@ network.get_network_area_diagram()
 #| echo: false
 area_diagram(network)
 ```
+
+## Exchange formats
+
+European operators exchange grid models as **CGMES**, the Common Grid Model Exchange Standard. PowSyBl writes and reads it, as well as its own **XIIDM** format. A round trip shows what each one keeps. It runs on the PEGASE 89-bus case of PGLib, the grid of Part 2, which GridFM-Datakit's PowSyBl reader turns from a MATPOWER file into a pypowsybl network.
+
+```{python}
+from pathlib import Path
+
+from gridfm_datakit.network import get_pglib_source_path
+from gridfm_datakit.powsybl import load_net
+
+Path("outputs/part1").mkdir(parents=True, exist_ok=True)
+grid = load_net(get_pglib_source_path("case89_pegase")).pp_net
+grid.save("outputs/part1/pegase89.zip", format="CGMES")
+grid.save(
+    "outputs/part1/pegase89_cgmes3.zip",
+    format="CGMES",
+    parameters={"iidm.export.cgmes.cim-version": "100"},
+)
+grid.save("outputs/part1/pegase89.xiidm", format="XIIDM")
+
+copies = {
+    "MATPOWER source": grid,
+    "CGMES 2.4.15": pp.network.load("outputs/part1/pegase89.zip"),
+    "CGMES 3": pp.network.load("outputs/part1/pegase89_cgmes3.zip"),
+    "XIIDM": pp.network.load("outputs/part1/pegase89.xiidm"),
+}
+pd.DataFrame(
+    {
+        name: [len(n.get_buses()), len(n.get_generators()), len(n.get_branches()),
+               len(n.get_operational_limits())]
+        for name, n in copies.items()
+    },
+    index=["buses", "generators", "branches", "operational limits"],
+)
+```
+
+A MATPOWER case rates its branches in apparent power. CGMES 2.4.15 holds apparent power limits in its Equipment Operation profile, which PowSyBl does not write for a bus-branch model like this one, so they are lost. CGMES 3 moved them into the core equipment profile and keeps them, but two buses go missing on the way back. XIIDM keeps everything, so that is the file GridFM-Datakit gets in Part 2. A CGMES file from an operator, whose limits are currents, goes in the same way.
 
 ## A first Dynawo simulation
 
@@ -171,7 +238,7 @@ ax_w.legend(ncols=2)
 fig.tight_layout()
 ```
 
-The fault collapses the voltage at bus 4, the machines accelerate during the fault, then swing back together. This is one trajectory. Parts 3 and 4 produce thousands of them, each from a different operating point and a different disturbance.
+The fault collapses the voltage at bus 4, and the rotor speeds of the machines swing, then settle. This is one trajectory. Parts 3 and 4 produce thousands of them, each from a different operating point and a different disturbance.
 
 ## Your turn
 
@@ -205,5 +272,5 @@ ax.set(title="Rotor speed of generator 1 after tripping generator 2",
 Losing a machine is a lasting power imbalance. The speed drops and settles at a new value set by the governors, where a cleared fault leaves the system where it started.
 
 ::: {.callout-note title="Next"}
-[Part 2](02-steady-state.qmd) feeds a real grid through PowSyBl into datakit and builds a steady-state dataset.
+[Part 2](02-steady-state.qmd) feeds the PEGASE grid through PowSyBl into datakit and builds a steady-state dataset.
 :::

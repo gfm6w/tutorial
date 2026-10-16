@@ -1,7 +1,7 @@
 ---
 title: "Steady-state datasets"
-subtitle: "Part 2 · From a real grid to power flow samples"
-description: "Read a real transmission grid with PowSyBl, move it between exchange formats, and generate perturbed power flow samples solved by OpenLoadFlow."
+subtitle: "Part 2 · From a grid to power flow samples"
+description: "Read a transmission grid with PowSyBl, hand it to GridFM-Datakit as XIIDM, and generate perturbed power flow samples solved by OpenLoadFlow."
 jupyter: python3
 ---
 
@@ -12,7 +12,7 @@ jupyter: python3
 ::: {.goals}
 #### In this part
 
-- Read a real transmission grid with PowSyBl and move it between exchange formats.
+- Read a transmission grid with PowSyBl and hand it to GridFM-Datakit as XIIDM.
 - Configure GridFM-Datakit to perturb load and topology and solve every sample with OpenLoadFlow.
 - Explore the dataset and see why it contains operating points outside the limits.
 :::
@@ -43,7 +43,7 @@ shutil.rmtree(work, ignore_errors=True)
 work.mkdir(parents=True)
 ```
 
-## A real grid
+## A PEGASE grid
 
 The **PEGASE** project mapped the European high-voltage grid for state estimation and security studies. Its 89-bus case is a slice of that grid, published with MATPOWER and the PGLib benchmark library. GridFM-Datakit downloads PGLib cases on demand, and its PowSyBl reader turns the MATPOWER file into a pypowsybl network.
 
@@ -82,34 +82,15 @@ busiest = grid.get_loads().groupby("voltage_level_id").p0.sum().idxmax()
 area_diagram(grid, busiest, depth=2, spread=0.5, height=640)
 ```
 
-## Exchange formats
-
-European operators exchange grid models as **CGMES**, the Common Grid Model Exchange Standard. PowSyBl writes and reads it, as well as its own **XIIDM** format. A round trip shows what each one keeps.
-
-```{python}
-grid.save("outputs/part2/pegase89.zip", format="CGMES")
-grid.save("outputs/part2/pegase89.xiidm", format="XIIDM")
-
-copies = {
-    "MATPOWER source": grid,
-    "CGMES 2.4.15": pp.network.load("outputs/part2/pegase89.zip"),
-    "XIIDM": pp.network.load("outputs/part2/pegase89.xiidm"),
-}
-pd.DataFrame(
-    {
-        name: [len(n.get_buses()), len(n.get_generators()), len(n.get_branches()),
-               len(n.get_operational_limits())]
-        for name, n in copies.items()
-    },
-    index=["buses", "generators", "branches", "operational limits"],
-)
-```
-
-The topology survives both. The thermal ratings of a MATPOWER case are apparent power limits, which CGMES 2.4.15 cannot express, so they are lost there. XIIDM keeps everything, so that is the file GridFM-Datakit gets. A CGMES file from an operator, whose limits are currents, goes in the same way.
-
 ## Configure GridFM-Datakit
 
 For every **load scenario**, datakit solves an AC optimal power flow with PowerModels.jl to get a realistic dispatch. It then draws **topology variants**, here one line or generator out at a time, and solves each one with **OpenLoadFlow** from the same set-points. The set-points are not re-optimised after the outage, so some samples break voltage or thermal limits. That is deliberate. A model meant for operations has to see stressed states too.
+
+Part 1 showed that XIIDM keeps the whole grid, limits included, so that is the file GridFM-Datakit gets.
+
+```{python}
+grid.save("outputs/part2/pegase89.xiidm", format="XIIDM")
+```
 
 The configuration is the YAML file you would pass to `gridfm_datakit generate`.
 
