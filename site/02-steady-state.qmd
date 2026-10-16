@@ -68,18 +68,18 @@ ax = (buses.v_mag / buses.nominal_v).plot.hist(bins=30, color=PALETTE[0], edgeco
 ax.set(title="Voltage magnitude, base case", xlabel="pu", ylabel="buses");
 ```
 
-The network area diagram around the most loaded substation shows the flows.
+The network area diagram draws the whole grid, one colour per voltage level. Several PEGASE buses share a voltage level, so the per-bus legends and the flow values are left out to keep it readable.
 
 ```{python}
 #| eval: false
-busiest = grid.get_loads().groupby("voltage_level_id").p0.sum().idxmax()
-grid.get_network_area_diagram(busiest, depth=2)
+overview = pp.network.NadParameters(bus_legend=False, edge_info_included=False)
+grid.get_network_area_diagram(nad_parameters=overview)
 ```
 
 ```{python}
 #| echo: false
-busiest = grid.get_loads().groupby("voltage_level_id").p0.sum().idxmax()
-area_diagram(grid, busiest, depth=2, spread=0.5, height=640)
+overview = pp.network.NadParameters(bus_legend=False, edge_info_included=False)
+area_diagram(grid, spread=1, height=640, parameters=overview)
 ```
 
 ## Configure GridFM-Datakit
