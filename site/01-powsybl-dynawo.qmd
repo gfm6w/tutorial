@@ -76,35 +76,33 @@ print(result[0].status_text, "in", result[0].iteration_count, "iterations")
 network.get_buses()[["v_mag", "v_angle"]].round(2).T
 ```
 
-PowSyBl offers advanced equipment modeling and configurable power flow. In this example, a transformer tap ratio changers is used to regulate voltage.
+PowSyBl models equipment in detail, and OpenLoadFlow can control it. On a copy of the grid, the ratio tap changer of the transformer between buses 4 and 9 starts at its lowest tap and regulates the voltage of bus 9 to 14.3 kV.
 
 ```{python}
-transfo_id = '_BUS____4-BUS____9-1_PT'
-network.update_ratio_tap_changers(
-    id=transfo_id,
+regulated = pp.network.load("../data/ieee14/IEEE14.iidm")
+transformer = "_BUS____4-BUS____9-1_PT"
+regulated.update_ratio_tap_changers(
+    id=transformer,
     tap=1,
     oltc=True,
-    regulated_side="TWO", # Bus 9
+    regulated_side="TWO",
     target_v=14.3,
     target_deadband=0.1,
 )
-
-network.update_ratio_tap_changers(
-    id=transfo_id,
-    regulating=True,
+regulated.update_ratio_tap_changers(id=transformer, regulating=True)
+result = pp.loadflow.run_ac(
+    regulated, pp.loadflow.Parameters(transformer_voltage_control_on=True)
 )
-
-pp.loadflow.run_ac(network, 
-                   parameters=pp.loadflow.Parameters(transformer_voltage_control_on=True),
-                   )
-
 print(result[0].status_text, "in", result[0].iteration_count, "iterations")
-print(f'Initial tap position: {network.get_ratio_tap_changers().loc[transfo_id, 'tap']}')
-print(f'Solved tap position: {network.get_ratio_tap_changers().loc[transfo_id, 'solved_tap_position']}')
-network.get_buses()[["v_mag", "v_angle"]].round(2).T
 
+tap = regulated.get_ratio_tap_changers().loc[transformer]
+print("tap", tap.tap, "solved at", tap.solved_tap_position)
+pd.DataFrame(
+    {"base case": network.get_buses().v_mag, "regulated": regulated.get_buses().v_mag}
+).loc[["_BUS____9_VL_0"]].round(2)
 ```
 
+The load flow leaves `tap` at its set value and reports the position it chose in `solved_tap_position`. The base case `network` is untouched, so the rest of this part runs on the original grid.
 
 PowSyBl also draws the grid. The network area diagram shows each voltage level with its flows.
 
