@@ -36,7 +36,7 @@ Both projects started at RTE, the French transmission system operator, and are d
 | What | Framework to model, exchange and simulate grids | Time-domain simulator, RMS (phasor) |
 | Core | Java, with the Python binding **pypowsybl** | C++ solver, Modelica models compiled ahead of time |
 | Grid formats | CGMES, UCTE, PSS/E, XIIDM, MATPOWER | Reads the grid from PowSyBl |
-| Simulations | Load flow (OpenLoadFlow), security analysis, sensitivities, short circuit | Short-term stability (DynaSwing), long-term voltage stability (DynaWaltz), steady state with automata (DynaFlow) |
+| Simulations | Load flow (OpenLoadFlow), security analysis, sensitivities, short circuit, remedial action optimizer | Short-term stability (DynaSwing), long-term stability (DynaWaltz), steady state with automata (DynaFlow) |
 | Home | [powsybl.org](https://www.powsybl.org), an LF Energy project | [dynawo.github.io](https://dynawo.github.io) |
 
 ![](assets/logos/powsybl-logo.svg){width=180} &nbsp;&nbsp;&nbsp; ![](assets/logos/dynawo-logo.png){width=150} &nbsp;&nbsp;&nbsp; ![](assets/logos/lf-energy-logo.svg){width=150}
@@ -75,6 +75,36 @@ result = pp.loadflow.run_ac(network)
 print(result[0].status_text, "in", result[0].iteration_count, "iterations")
 network.get_buses()[["v_mag", "v_angle"]].round(2).T
 ```
+
+PowSyBl offers advanced equipment modeling and configurable power flow. In this example, a transformer tap ratio changers is used to regulate voltage.
+
+```{python}
+transfo_id = '_BUS____4-BUS____9-1_PT'
+network.update_ratio_tap_changers(
+    id=transfo_id,
+    tap=1,
+    oltc=True,
+    regulated_side="TWO", # Bus 9
+    target_v=14.3,
+    target_deadband=0.1,
+)
+
+network.update_ratio_tap_changers(
+    id=transfo_id,
+    regulating=True,
+)
+
+pp.loadflow.run_ac(network, 
+                   parameters=pp.loadflow.Parameters(transformer_voltage_control_on=True),
+                   )
+
+print(result[0].status_text, "in", result[0].iteration_count, "iterations")
+print(f'Initial tap position: {network.get_ratio_tap_changers().loc[transfo_id, 'tap']}')
+print(f'Solved tap position: {network.get_ratio_tap_changers().loc[transfo_id, 'solved_tap_position']}')
+network.get_buses()[["v_mag", "v_angle"]].round(2).T
+
+```
+
 
 PowSyBl also draws the grid. The network area diagram shows each voltage level with its flows.
 
@@ -171,7 +201,7 @@ ax_w.legend(ncols=2)
 fig.tight_layout()
 ```
 
-The fault collapses the voltage at bus 4, the machines accelerate during the fault, then swing back together. This is one trajectory. Parts 3 and 4 produce thousands of them, each from a different operating point and a different disturbance.
+The fault collapses the voltage at bus 4, causing the machines' rotor speed to swing, then stabilize at the end. This is one trajectory. Parts 3 and 4 produce thousands of them, each from a different operating point and a different disturbance.
 
 ## Your turn
 
