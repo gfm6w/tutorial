@@ -199,7 +199,7 @@ ax_w.legend(ncols=2)
 fig.tight_layout()
 ```
 
-The fault collapses the voltage at bus 4, causing the machines' rotor speed to swing, then stabilize at the end. This is one trajectory. Parts 3 and 4 produce thousands of them, each from a different operating point and a different disturbance.
+The fault collapses the voltage at bus 4, and the rotor speeds of the machines swing, then settle. This is one trajectory. Parts 3 and 4 produce thousands of them, each from a different operating point and a different disturbance.
 
 ## Your turn
 
