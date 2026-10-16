@@ -130,11 +130,17 @@ from gridfm_datakit.powsybl import load_net
 Path("outputs/part1").mkdir(parents=True, exist_ok=True)
 grid = load_net(get_pglib_source_path("case89_pegase")).pp_net
 grid.save("outputs/part1/pegase89.zip", format="CGMES")
+grid.save(
+    "outputs/part1/pegase89_cgmes3.zip",
+    format="CGMES",
+    parameters={"iidm.export.cgmes.cim-version": "100"},
+)
 grid.save("outputs/part1/pegase89.xiidm", format="XIIDM")
 
 copies = {
     "MATPOWER source": grid,
     "CGMES 2.4.15": pp.network.load("outputs/part1/pegase89.zip"),
+    "CGMES 3": pp.network.load("outputs/part1/pegase89_cgmes3.zip"),
     "XIIDM": pp.network.load("outputs/part1/pegase89.xiidm"),
 }
 pd.DataFrame(
@@ -147,7 +153,7 @@ pd.DataFrame(
 )
 ```
 
-The topology survives both. The thermal ratings of a MATPOWER case are apparent power limits, which CGMES 2.4.15 cannot express [TODO:CHECK AND CONFIRM, because this feels critical for operational usage], so they are lost there. XIIDM keeps everything, so that is the file GridFM-Datakit gets in Part 2. A CGMES file from an operator, whose limits are currents, goes in the same way.
+A MATPOWER case rates its branches in apparent power. CGMES 2.4.15 holds apparent power limits in its Equipment Operation profile, which PowSyBl does not write for a bus-branch model like this one, so they are lost. CGMES 3 moved them into the core equipment profile and keeps them, but two buses go missing on the way back. XIIDM keeps everything, so that is the file GridFM-Datakit gets in Part 2. A CGMES file from an operator, whose limits are currents, goes in the same way.
 
 ## A first Dynawo simulation
 
