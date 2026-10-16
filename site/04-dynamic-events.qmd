@@ -70,7 +70,7 @@ Part 3 hit every operating point with the same fault. A model trained on that da
 
 ## Four kinds of trouble
 
-A bus fault cleared on its own, a line trip, a fault cleared by tripping a line next to it, and the loss of a generator. Faults are twice as likely as the rest.
+A bus fault cleared after a while, a line trip, a bus fault combined with a line tripping next to it, and the loss of a generator. Faults are twice as likely as the rest.
 
 ```{python}
 event_perturbation = yaml.safe_load("""
@@ -94,7 +94,7 @@ scenarios:
       - type: Disconnect
         target: {element: line, distance: [0, 2]}
 
-  - name: fault_cleared_by_trip
+  - name: fault_and_line_trip
     start_time: {distribution: uniform, low: 0.5, high: 2.0}
     events:
       - type: NodeFault
@@ -115,7 +115,7 @@ scenarios:
 """)
 ```
 
-`distance: 0` from a random anchor picks any bus. In `fault_cleared_by_trip`, the line at distance 0 touches the faulted bus, so the trip isolates the fault.
+`distance: 0` from a random anchor picks any bus. In `fault_and_line_trip`, the line at distance 0 touches the faulted bus, so the trip isolates the fault but the line remains tripped after.
 
 ## Preview the draws
 
@@ -270,7 +270,7 @@ for ax in axes[:, 0]:
 fig.tight_layout()
 ```
 
-Faults dip deep and recover. Trips leave a lasting change. A fault cleared by a trip combines both, the sequence a protection system produces in the field. When the faulted bus hangs on a single line, the trip leaves it dead, which is the flat line at zero.
+Faults dip deep and recover. Trips leave a lasting change. A fault and a trip combine both. When the faulted bus hangs on a single line, the trip leaves it dead, which is the flat line at zero.
 
 ## Initial state, event, trajectory
 
