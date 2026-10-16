@@ -70,7 +70,7 @@ Part 3 hit every operating point with the same fault. A model trained on that da
 
 ## Four kinds of trouble
 
-A bus fault cleared after a while, a line trip, a bus fault combined with a line tripping next to it, and the loss of a generator. Faults are twice as likely as the rest.
+A bus fault cleared after a delay, a line trip, a bus fault combined with a line tripping next to it [TODO: We could pick another one after the discussion with Marco], and the loss of a generator. Faults are twice as likely as the rest.
 
 ```{python}
 event_perturbation = yaml.safe_load("""
@@ -115,7 +115,7 @@ scenarios:
 """)
 ```
 
-`distance: 0` from a random anchor picks any bus. In `fault_and_line_trip`, the line at distance 0 touches the faulted bus, so the trip isolates the fault but the line remains tripped after.
+`distance: 0` from a random anchor picks any bus. In `fault_and_line_trip`, the line at distance 0 touches the faulted bus, so the trip and the fault happen at the same bus.
 
 ## Preview the draws
 
