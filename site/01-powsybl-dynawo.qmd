@@ -14,6 +14,7 @@ jupyter: python3
 
 - Place PowSyBl and Dynawo in the GridFM-Datakit pipeline.
 - Load a grid, solve a power flow and draw it with pypowsybl.
+- Move a grid between exchange formats and see what each one keeps.
 - Run a first Dynawo time-domain simulation from Python and plot it.
 :::
 
@@ -115,6 +116,38 @@ network.get_network_area_diagram()
 #| echo: false
 area_diagram(network)
 ```
+
+## Exchange formats
+
+European operators exchange grid models as **CGMES**, the Common Grid Model Exchange Standard. PowSyBl writes and reads it, as well as its own **XIIDM** format. A round trip shows what each one keeps. It runs on the PEGASE 89-bus case of PGLib, the grid of Part 2, which GridFM-Datakit's PowSyBl reader turns from a MATPOWER file into a pypowsybl network.
+
+```{python}
+from pathlib import Path
+
+from gridfm_datakit.network import get_pglib_source_path
+from gridfm_datakit.powsybl import load_net
+
+Path("outputs/part1").mkdir(parents=True, exist_ok=True)
+grid = load_net(get_pglib_source_path("case89_pegase")).pp_net
+grid.save("outputs/part1/pegase89.zip", format="CGMES")
+grid.save("outputs/part1/pegase89.xiidm", format="XIIDM")
+
+copies = {
+    "MATPOWER source": grid,
+    "CGMES 2.4.15": pp.network.load("outputs/part1/pegase89.zip"),
+    "XIIDM": pp.network.load("outputs/part1/pegase89.xiidm"),
+}
+pd.DataFrame(
+    {
+        name: [len(n.get_buses()), len(n.get_generators()), len(n.get_branches()),
+               len(n.get_operational_limits())]
+        for name, n in copies.items()
+    },
+    index=["buses", "generators", "branches", "operational limits"],
+)
+```
+
+The topology survives both. The thermal ratings of a MATPOWER case are apparent power limits, which CGMES 2.4.15 cannot express [TODO:CHECK AND CONFIRM, because this feels critical for operational usage], so they are lost there. XIIDM keeps everything, so that is the file GridFM-Datakit gets in Part 2. A CGMES file from an operator, whose limits are currents, goes in the same way.
 
 ## A first Dynawo simulation
 
