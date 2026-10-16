@@ -101,9 +101,13 @@ class Zoomable:
 </script>"""
 
 
-def area_diagram(network, voltage_level_ids=None, depth=0, spread=0.45, height=560):
+def area_diagram(
+    network, voltage_level_ids=None, depth=0, spread=0.45, height=560, parameters=None
+):
     """Zoomable network area diagram with its nodes pulled together."""
-    first = network.get_network_area_diagram(voltage_level_ids, depth)
+    first = network.get_network_area_diagram(
+        voltage_level_ids, depth, nad_parameters=parameters
+    )
     nodes = json.loads(first.metadata)["nodes"]
     positions = pd.DataFrame(
         {
@@ -113,6 +117,6 @@ def area_diagram(network, voltage_level_ids=None, depth=0, spread=0.45, height=5
         }
     ).set_index("id")
     diagram = network.get_network_area_diagram(
-        voltage_level_ids, depth, fixed_positions=positions
+        voltage_level_ids, depth, nad_parameters=parameters, fixed_positions=positions
     )
     return Zoomable(diagram.svg, height)
