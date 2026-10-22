@@ -4,14 +4,15 @@ A code cell tagged `solution` becomes an empty cell followed by the solution in
 a <details> block, and its collapsed callout goes, unless `solutions` asks for
 the solution as a plain cell. Cells with `eval: false` are dropped. Quarto
 markup becomes plain Markdown: callouts turn into quotes, chip spans into a
-dotted line, a `.center` div becomes an `align="center"` one, other div
-fences go. Local images resolve against the folder of the page and are
-inlined as data URIs at the width the page gives them, rasters downscaled to
-twice that width, so a notebook shows them wherever it is opened. They are PNG
-or JPEG, since GitHub drops SVG data URIs. Links between parts point at the
-notebooks, other pages at the site. `#|` options are dropped and cell IDs are
-numbered, so a rebuild only diffs what changed. Files are UTF-8 with LF line
-ends on every platform.
+dotted line, a `.center` div becomes an `align="center"` HTML block with no
+blank line inside, since GitHub left-aligns a paragraph, other div fences go.
+Local images resolve against the folder of the page and are inlined as data
+URIs at the width the page gives them, rasters downscaled to twice that width,
+so a notebook shows them wherever it is opened. They are PNG or JPEG, since
+GitHub drops SVG data URIs. Links between parts point at the notebooks, other
+pages at the site. `#|` options are dropped and cell IDs are numbered, so a
+rebuild only diffs what changed. Files are UTF-8 with LF line ends on every
+platform.
 """
 
 import base64
@@ -109,12 +110,12 @@ def markdown(text, folder):
         if fence and fence.group(1):
             center = bool(CENTER.search(fence.group(1)))
             divs.append(center)
-            lines.extend(['<div align="center">', ""] if center else [])
+            lines.extend(['<div align="center">'] if center else [])
             continue
         if fence:
             quote = False
             if divs and divs.pop():
-                lines.extend(["", "</div>"])
+                lines.append("</div>")
             continue
         spans = SPAN.findall(line)
         if spans and not SPAN.sub("", line).strip():
