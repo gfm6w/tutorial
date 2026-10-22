@@ -177,7 +177,7 @@ print(
     bus.load_scenario_idx.nunique(),
     "load scenarios",
 )
-bus.head()
+bus[["scenario", "bus", "Pd", "Qd", "Pg", "Qg", "Vm", "Va"]].head()
 ```
 
 Each load scenario is one step of an aggregate yearly load profile, scaled into the range the OPF can serve, with local noise on every bus. The topology variants of a load scenario share its demand, so one sample per load scenario is enough.
