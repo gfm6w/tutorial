@@ -1,0 +1,8 @@
+.git
+.venv
+**/__pycache__
+**/.ipynb_checkpoints
+**/outputs
+site/_site
+site/_freeze
+site/.quarto
