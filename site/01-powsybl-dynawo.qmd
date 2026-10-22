@@ -146,10 +146,10 @@ copies = {
 pd.DataFrame(
     {
         name: [len(n.get_buses()), len(n.get_generators()), len(n.get_branches()),
-               len(n.get_operational_limits())]
+               len(n.get_loading_limits())]
         for name, n in copies.items()
     },
-    index=["buses", "generators", "branches", "operational limits"],
+    index=["buses", "generators", "branches", "loading limits"],
 )
 ```
 
