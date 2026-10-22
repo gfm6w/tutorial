@@ -7,9 +7,10 @@ spans into a dotted line, div fences go. Local images are inlined as data URIs
 at the width the page gives them, rasters downscaled to twice that width, so a
 notebook shows them wherever it is opened. Links between parts point at the
 notebooks, other pages at the site. `#|` options are dropped and cell IDs are
-numbered, so a rebuild only diffs what changed.
+numbered, so a rebuild only diffs what changed. Files are UTF-8 with LF line
+ends on every platform.
 
-Usage: python scripts/make_notebooks.py [NAME.qmd ...]
+Usage: python scripts/make_notebooks.py [NAME.qmd ...], or through build.py.
 """
 
 import base64
@@ -137,7 +138,7 @@ def header(meta, name):
 
 
 def convert(name):
-    meta, body = split_front_matter((SITE / name).read_text())
+    meta, body = split_front_matter((SITE / name).read_text(encoding="utf-8"))
     cells = [nbformat.v4.new_markdown_cell(header(meta, name))]
     position = 0
     for chunk in CHUNK.finditer(body):
@@ -170,15 +171,26 @@ def convert(name):
         "language": "python",
     }
     notebook.metadata["language_info"] = {"name": "python"}
-    target = OUT / Path(name).with_suffix(".ipynb")
-    nbformat.write(notebook, target)
-    return target
+    return notebook
+
+
+def target(name):
+    return OUT / Path(name).with_suffix(".ipynb")
+
+
+def text(name):
+    return nbformat.writes(convert(name)) + "\n"
+
+
+def write(name):
+    OUT.mkdir(exist_ok=True)
+    target(name).write_text(text(name), encoding="utf-8", newline="\n")
+    return target(name)
 
 
 def main():
-    OUT.mkdir(exist_ok=True)
     for name in sys.argv[1:] or SOURCES:
-        print(convert(name).relative_to(ROOT))
+        print(write(name).relative_to(ROOT))
 
 
 if __name__ == "__main__":
