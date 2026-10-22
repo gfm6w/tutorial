@@ -45,4 +45,4 @@ Commit the notebooks and `site/_freeze` with the source. Notebook images are PNG
 
 - IEEE 14-bus case and Dynawo inputs from the GridFM-Datakit dynamic example (Apache-2.0), `IDAOrder2` solver set from the Dynawo IEEE14 fault example.
 - PEGASE case from [PGLib-OPF](https://github.com/power-grid-lib/pglib-opf) (CC BY 4.0), by C. Josz, S. Fliscounakis, J. Maeght and P. Panciatici.
-- Fonts Space Grotesk, IBM Plex Sans and JetBrains Mono (SIL OFL). [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) (BSD-2-Clause).
+- Fonts Space Grotesk, IBM Plex Sans and JetBrains Mono ([SIL OFL](site/assets/fonts/OFL.txt)). [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) (BSD-2-Clause).
