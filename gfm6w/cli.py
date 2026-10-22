@@ -1,7 +1,7 @@
 """The gfm6w command, which builds the tutorial from its Quarto pages.
 
-    gfm6w notebooks        regenerate the notebooks, nothing runs
-    gfm6w check            fail if the notebooks are out of date
+    gfm6w notebooks        regenerate the notebooks and solutions, nothing runs
+    gfm6w check            fail if the notebooks or solutions are out of date
     gfm6w test [N ...]     run notebooks N (1 to 4, default all), solutions
                            filled in
     gfm6w html             execute the pages and render the website
@@ -45,15 +45,16 @@ def pages(site, parts=()):
 
 def notebooks(site, out):
     for source in pages(site):
-        print(nb.write(source, out))
+        for path in nb.write(source, out):
+            print(path)
 
 
 def check(site, out):
     stale = [
-        nb.target(source, out)
+        out / name
         for source in pages(site)
-        if not nb.target(source, out).exists()
-        or nb.target(source, out).read_text(encoding="utf-8") != nb.text(source)
+        for name, text in nb.outputs(source).items()
+        if not (out / name).exists() or (out / name).read_text(encoding="utf-8") != text
     ]
     for path in stale:
         print(f"{path} is out of date")

@@ -1,8 +1,10 @@
 """Convert a Quarto page of the tutorial into a participant notebook.
 
-A code cell tagged `solution` becomes an empty cell followed by the solution in
-a <details> block, and its collapsed callout goes, unless `solutions` asks for
-the solution as a plain cell. Cells with `eval: false` are dropped. Quarto
+A `.solution` callout, its code and its text, goes to solutions/NAME-K.py next
+to the notebook, the text as comments. The notebook gets an exercise cell that
+can `%load` it and a link to it, since GitHub shows a <details> block open.
+`solutions` puts the code back as a plain cell instead. Cells with
+`eval: false` are dropped. Quarto
 markup becomes plain Markdown: callouts turn into quotes, chip spans into a
 dotted line, a `.center` div becomes an `align="center"` HTML block with no
 blank line inside, since GitHub left-aligns a paragraph, other div fences go.
@@ -18,6 +20,7 @@ platform.
 import base64
 import io
 import re
+import textwrap
 from pathlib import Path
 
 import nbformat
@@ -33,6 +36,9 @@ SOURCES = [
 ]
 
 CHUNK = re.compile(r"^```\{python\}\s*\n(.*?)^```\s*$", re.S | re.M)
+SOLUTION = re.compile(
+    r"^:::+\s*\{\.callout-\w+[^}]*\.solution[^}]*\}\s*\n(.*?)^:::+\s*$", re.S | re.M
+)
 CALLOUT = re.compile(r'^:::+\s*\{\.callout-(\w+)([^}]*)\}\s*$')
 TITLE = re.compile(r'title="([^"]*)"')
 FENCE = re.compile(r"^:::+\s*(\{[^}]*\})?\s*$")
@@ -95,8 +101,6 @@ def markdown(text, folder):
         callout = CALLOUT.match(line)
         if callout:
             divs.append(False)
-        if callout and ".solution" in callout.group(2):
-            continue
         if callout:
             kind, attrs = callout.groups()
             title = TITLE.search(attrs)
@@ -150,28 +154,54 @@ def header(meta, source):
     return "\n\n".join(lines)
 
 
-def convert(source, solutions=False):
+def comment(text):
+    return "\n".join(
+        textwrap.fill(paragraph, 77, initial_indent="# ", subsequent_indent="# ")
+        for paragraph in text.split("\n\n")
+    )
+
+
+def blocks(body):
+    found = [(m.start(), m.end(), "solution", m) for m in SOLUTION.finditer(body)]
+    for chunk in CHUNK.finditer(body):
+        if not any(start <= chunk.start() < end for start, end, _, _ in found):
+            found.append((chunk.start(), chunk.end(), "chunk", chunk))
+    return sorted(found, key=lambda block: block[0])
+
+
+def build(source, solutions=False):
     meta, body = split_front_matter(source.read_text(encoding="utf-8"))
     cells = [nbformat.v4.new_markdown_cell(header(meta, source))]
+    files = {}
     position = 0
-    for chunk in CHUNK.finditer(body):
-        text = markdown(body[position : chunk.start()], source.parent)
+    for start, end, kind, match in blocks(body):
+        text = markdown(body[position:start], source.parent)
         if text:
             cells.append(nbformat.v4.new_markdown_cell(text))
-        position = chunk.end()
-        opts, code = options(chunk.group(1))
-        if opts.get("include") is False or opts.get("eval") is False:
-            continue
-        if "solution" in (opts.get("tags") or []) and not solutions:
-            cells.append(nbformat.v4.new_code_cell("# Your turn\n"))
+        position = end
+        if kind == "solution":
+            inner = match.group(1)
+            code = "\n\n".join(options(c.group(1))[1] for c in CHUNK.finditer(inner))
+            if solutions:
+                cells.append(nbformat.v4.new_code_cell(code))
+                continue
+            name = f"solutions/{source.stem}-{len(files) + 1}.py"
+            prose = markdown(CHUNK.sub("", inner), source.parent)
+            files[name] = code + ("\n\n" + comment(prose) if prose else "") + "\n"
             cells.append(
-                nbformat.v4.new_markdown_cell(
-                    "<details><summary><b>Show a solution</b></summary>\n\n"
-                    f"```python\n{code}\n```\n\n</details>"
+                nbformat.v4.new_code_cell(
+                    "# Your turn. To load a solution, uncomment the next line and"
+                    f" run the cell.\n# %load {name}\n"
                 )
             )
-        else:
-            cells.append(nbformat.v4.new_code_cell(code))
+            cells.append(
+                nbformat.v4.new_markdown_cell(f"A solution is in [{name}]({name}).")
+            )
+            continue
+        opts, code = options(match.group(1))
+        if opts.get("include") is False or opts.get("eval") is False:
+            continue
+        cells.append(nbformat.v4.new_code_cell(code))
     tail = markdown(body[position:], source.parent)
     if tail:
         cells.append(nbformat.v4.new_markdown_cell(tail))
@@ -184,18 +214,23 @@ def convert(source, solutions=False):
         "language": "python",
     }
     notebook.metadata["language_info"] = {"name": "python"}
-    return notebook
+    files[source.with_suffix(".ipynb").name] = nbformat.writes(notebook) + "\n"
+    return notebook, files
 
 
-def target(source, out):
-    return out / source.with_suffix(".ipynb").name
+def convert(source, solutions=False):
+    return build(source, solutions)[0]
 
 
-def text(source):
-    return nbformat.writes(convert(source)) + "\n"
+def outputs(source):
+    return build(source)[1]
 
 
 def write(source, out):
-    out.mkdir(parents=True, exist_ok=True)
-    target(source, out).write_text(text(source), encoding="utf-8", newline="\n")
-    return target(source, out)
+    paths = []
+    for name, text in outputs(source).items():
+        path = out / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8", newline="\n")
+        paths.append(path)
+    return paths
