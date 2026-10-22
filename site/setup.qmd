@@ -59,7 +59,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-The requirements pin GridFM-Datakit to the `gfm6wt` branch, which carries the dynamic event randomization and the PowSyBl reader fixes used here.
+The requirements pin GridFM-Datakit to a commit of the `gfm6wt` branch, which carries the dynamic event randomization and the PowSyBl reader fixes used here.
 
 ### 2. Julia and PowerModels
 
