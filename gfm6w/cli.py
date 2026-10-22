@@ -9,7 +9,7 @@
     gfm6w html             execute the pages and render the website
     gfm6w build            html, then notebooks
     gfm6w publish -o DIR   build, then mirror the website into DIR, a checkout
-                           of gfm6w.github.io
+                           of gfm6w.github.io, keeping its .git, .github and CNAME
 
 Every command reads the pages from -i (default site/). The notebooks go to -o
 (default notebooks/). Quarto renders the website into site/_site, html copies
@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 NOTEBOOKS = ROOT / "notebooks"
 HTML = SITE / "_site"
-KEEP = {".git", "CNAME"}
+KEEP = {".git", ".github", "CNAME"}
 
 
 def pages(site, parts=()):
