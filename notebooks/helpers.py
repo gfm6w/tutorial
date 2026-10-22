@@ -53,6 +53,7 @@ def setup():
     )
     pd.set_option("display.max_columns", 12)
     pd.set_option("display.width", 120)
+    pd.set_option("display.show_dimensions", False)
     warnings.filterwarnings("ignore")
     logging.getLogger("powsybl").setLevel(logging.ERROR)
 

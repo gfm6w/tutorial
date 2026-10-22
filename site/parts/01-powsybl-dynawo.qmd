@@ -75,7 +75,7 @@ Every element type is a pandas DataFrame, and every attribute can be updated in 
 ```{python}
 result = pp.loadflow.run_ac(network)
 print(result[0].status_text, "in", result[0].iteration_count, "iterations")
-network.get_buses()[["v_mag", "v_angle"]].round(2).T
+network.get_buses()[["v_mag", "v_angle"]].round(2).head()
 ```
 
 PowSyBl models equipment in detail, and OpenLoadFlow can control it. On a copy of the grid, the ratio tap changer of the transformer between buses 4 and 9 starts at its lowest tap and regulates the voltage of bus 9 to 14.3 kV.
