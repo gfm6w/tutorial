@@ -4,6 +4,7 @@
     gfm6w check            fail if the notebooks or solutions are out of date
     gfm6w test [N ...]     run notebooks N (1 to 4, default all), solutions
                            filled in
+    gfm6w format           format the code of the pages with ruff
     gfm6w html             execute the pages and render the website
     gfm6w build            html, then notebooks
     gfm6w publish -o DIR   build, then mirror the website into DIR, a checkout
@@ -92,6 +93,14 @@ def html(site, out):
         print(f"Website copied to {out}")
 
 
+def format_pages(site):
+    for source in pages(site):
+        text = nb.formatted(source)
+        if text != source.read_text(encoding="utf-8"):
+            source.write_text(text, encoding="utf-8", newline="\n")
+            print(f"{source} reformatted")
+
+
 def build(site, html_out, notebooks_out):
     html(site, html_out)
     notebooks(site, notebooks_out)
@@ -142,6 +151,7 @@ def main():
     commands.add_parser("test", parents=[inputs, notebooks_out]).add_argument(
         "parts", nargs="*", type=int, choices=range(1, len(nb.SOURCES) + 1)
     )
+    commands.add_parser("format", parents=[inputs])
     commands.add_parser("html", parents=[inputs]).add_argument(
         "-o",
         "--output",
@@ -178,6 +188,8 @@ def main():
         check(args.input, args.output)
     elif args.command == "test":
         test(args.input, args.output, args.parts)
+    elif args.command == "format":
+        format_pages(args.input)
     elif args.command == "html":
         html(args.input, args.output)
     elif args.command == "build":
