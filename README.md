@@ -41,10 +41,14 @@ gfm6w format                   # format the code of the pages with ruff
 ruff format . && ruff check .  # format and lint the Python code and notebooks
 ```
 
-Commit the notebooks and `site/_freeze` with the source. Notebook images are PNG or JPEG. `gfm6w --help` lists the rest.
+Commit the notebooks and `site/_freeze` with the source. Dependencies go in `requirements.in`, then `uv pip compile requirements.in --universal --python-version 3.10 -o requirements.txt` refreshes the lock. Notebook images are PNG or JPEG. `gfm6w --help` lists the rest.
+
+## Licence
+
+Code (`gfm6w/`, `notebooks/helpers.py`, `scripts/`) is under [Apache-2.0](LICENSE). Pages, notebooks and figures are under [CC BY 4.0](LICENSE-CC-BY-4.0). Data, fonts and libraries keep the licences listed below, and the logos belong to their owners.
 
 ## Credits
 
 - IEEE 14-bus case and Dynawo inputs from the GridFM-Datakit dynamic example (Apache-2.0), `IDAOrder2` solver set from the Dynawo IEEE14 fault example.
 - PEGASE case from [PGLib-OPF](https://github.com/power-grid-lib/pglib-opf) (CC BY 4.0), by C. Josz, S. Fliscounakis, J. Maeght and P. Panciatici.
-- Fonts Space Grotesk, IBM Plex Sans and JetBrains Mono (SIL OFL). [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) (BSD-2-Clause).
+- Fonts Space Grotesk, IBM Plex Sans and JetBrains Mono ([SIL OFL](site/assets/fonts/OFL.txt)). [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) ([BSD-2-Clause](site/assets/js/svg-pan-zoom.LICENSE)).

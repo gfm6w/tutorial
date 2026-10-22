@@ -8,10 +8,10 @@ on:
       - ".dockerignore"
       - ".github/workflows/image.yml"
       - "data/**"
-      - "helpers.py"
       - "notebooks/**"
       - "requirements.txt"
       - "scripts/**"
+      - "site/assets/js/**"
   workflow_dispatch:
 
 concurrency:

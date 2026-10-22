@@ -3,9 +3,9 @@
 `PALETTE` is the categorical order of the plots, assigned in order. It passes
 the colour-vision-deficiency and contrast checks on a white background.
 `area_diagram` pulls the default network area diagram layout together by
-`spread` and shows it inline with svg-pan-zoom. The site serves its own copy
-of the library, a notebook loads it from the CDN. Under RequireJS the library
-registers as the AMD module `svg-pan-zoom` instead of a global.
+`spread` and shows it inline with svg-pan-zoom. Each diagram carries the
+library from site/assets/js, so a notebook needs no network, and runs it with
+`define` hidden so it sets the global even under RequireJS.
 """
 
 import json
@@ -13,6 +13,7 @@ import logging
 import re
 import uuid
 import warnings
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -57,8 +58,8 @@ def setup():
 
 
 SVG_PAN_ZOOM = (
-    "https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.2/dist/svg-pan-zoom.min.js"
-)
+    Path(__file__).parent.parent / "site" / "assets" / "js" / "svg-pan-zoom.min.js"
+).read_text(encoding="utf-8")
 
 
 class Zoomable:
@@ -88,22 +89,12 @@ class Zoomable:
 <p style="{note}">Scroll to zoom, drag to pan.</p>
 <script>
 (function () {{
-  var start = function (panZoom) {{
-    panZoom("#{uid}", {{controlIconsEnabled: true, fit: true, center: true,
-                        minZoom: 0.5, maxZoom: 40, zoomScaleSensitivity: 0.3,
-                        dblClickZoomEnabled: false}});
-  }};
-  if (window.svgPanZoom) {{
-    start(window.svgPanZoom);
-  }} else if (typeof define === "function" && define.amd) {{
-    require.config({{paths: {{"svg-pan-zoom": "{SVG_PAN_ZOOM[:-3]}"}}}});
-    require(["svg-pan-zoom"], start);
-  }} else {{
-    var script = document.createElement("script");
-    script.src = "{SVG_PAN_ZOOM}";
-    script.onload = function () {{ start(window.svgPanZoom); }};
-    document.head.appendChild(script);
+  if (!window.svgPanZoom) {{
+    (function (define) {{ {SVG_PAN_ZOOM} }})();
   }}
+  window.svgPanZoom("#{uid}", {{controlIconsEnabled: true, fit: true, center: true,
+                               minZoom: 0.5, maxZoom: 40, zoomScaleSensitivity: 0.3,
+                               dblClickZoomEnabled: false}});
 }})();
 </script>"""
 

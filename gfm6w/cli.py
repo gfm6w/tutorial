@@ -1,7 +1,8 @@
 """The gfm6w command, which builds the tutorial from its Quarto pages.
 
     gfm6w notebooks        regenerate the notebooks and solutions, nothing runs
-    gfm6w check            fail if the notebooks or solutions are out of date
+    gfm6w check            fail if the notebooks, solutions or frozen outputs
+                           are out of date
     gfm6w test [N ...]     run notebooks N (1 to 4, default all), solutions
                            filled in
     gfm6w format           format the code of the pages with ruff
@@ -21,6 +22,8 @@ so gfm6w is installed editable from the clone.
 """
 
 import argparse
+import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -50,6 +53,14 @@ def notebooks(site, out):
             print(path)
 
 
+def frozen(source):
+    path = source.parent / "_freeze" / source.stem / "execute-results" / "html.json"
+    if not path.exists():
+        return False
+    digest = hashlib.md5(source.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+    return json.loads(path.read_text(encoding="utf-8"))["hash"] == digest
+
+
 def check(site, out):
     stale = [
         out / name
@@ -57,11 +68,18 @@ def check(site, out):
         for name, text in nb.outputs(source).items()
         if not (out / name).exists() or (out / name).read_text(encoding="utf-8") != text
     ]
+    unrendered = [source for source in pages(site) if not frozen(source)]
     for path in stale:
         print(f"{path} is out of date")
+    for source in unrendered:
+        print(f"{source} changed since its frozen outputs")
     if stale:
-        sys.exit("Run `gfm6w notebooks` and commit the result.")
-    print("Notebooks match the sources")
+        print("Run `gfm6w notebooks` and commit the result.")
+    if unrendered:
+        print("Run `quarto render` on each page and commit site/_freeze.")
+    if stale or unrendered:
+        sys.exit(1)
+    print("Notebooks and frozen outputs match the sources")
 
 
 def test(site, out, parts):
