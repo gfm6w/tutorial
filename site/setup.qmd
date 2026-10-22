@@ -13,34 +13,39 @@ The notebooks need three things next to Python. **pypowsybl** comes from pip. **
 
 | Route | Works on | Effort |
 |---|---|---|
-| [GitHub Codespaces](#codespaces) | Any browser | One click, a few minutes to build |
-| [Dev container](#container) | Any OS with Docker | One command |
+| [GitHub Codespaces](#codespaces) | Any browser | One click, a few minutes to start |
+| [Container](#container) | Any OS with Docker | One command |
 | [Local install](#local) | Linux, Windows through WSL 2 | About ten minutes |
 
 ::: {.callout-note title="macOS"}
-Dynawo ships Linux and Windows builds only. On a Mac, use Codespaces or the dev container.
+Dynawo ships Linux and Windows builds only. On a Mac, use Codespaces or the container.
 :::
 
 ## GitHub Codespaces {#codespaces}
 
-Open the repository in a codespace. The dev container installs Python, Julia, PowerModels and Dynawo, then opens the notebooks.
+Open the repository in a codespace. It starts from a ready-made image with Python, Julia, PowerModels and Dynawo installed, then opens the notebooks.
 
 [Open in GitHub Codespaces](https://codespaces.new/gfm6w/tutorial?quickstart=1){.btn .btn-primary}
 
-The first build takes several minutes. Start it before the session.
+Pulling the image takes a few minutes. Start it before the session.
 
-## Dev container {#container}
+## Container {#container}
 
-With Docker and VS Code, clone the repository and choose **Reopen in Container**. Without VS Code, build and run the image directly.
+The image holds the notebooks and every tool they need. Pull and run it, then open the link printed by Jupyter.
+
+```bash
+docker run --rm -p 8888:8888 ghcr.io/gfm6w/tutorial
+```
+
+The download is about 2 GB, 5 GB on disk. Work done in the container is lost when it stops, unless you run it on a clone of the repository.
 
 ```bash
 git clone https://github.com/gfm6w/tutorial.git
 cd tutorial
-docker build -t gfm6w-tutorial -f .devcontainer/Dockerfile .
-docker run --rm -p 8888:8888 -v "$PWD":/workspace gfm6w-tutorial
+docker run --rm -p 8888:8888 -v "$PWD":/workspace ghcr.io/gfm6w/tutorial
 ```
 
-Then open the link printed by Jupyter.
+With VS Code, open the clone and choose **Reopen in Container**. To build the image yourself, run `docker build -t ghcr.io/gfm6w/tutorial -f .devcontainer/Dockerfile .` from the clone.
 
 ## Local install {#local}
 

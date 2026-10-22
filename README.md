@@ -21,7 +21,7 @@ Hands-on tutorial on [PowSyBl](https://www.powsybl.org) and [Dynawo](https://dyn
 Set up before the session, the downloads take a few minutes. The [setup page](https://gfm6w.github.io/setup.html) has the details.
 
 - **Codespaces.** [Open in GitHub Codespaces](https://codespaces.new/gfm6w/tutorial?quickstart=1). Nothing to install.
-- **Dev container.** Open the folder in VS Code and choose *Reopen in Container*, or build `.devcontainer/Dockerfile` with Docker.
+- **Container.** `docker run --rm -p 8888:8888 ghcr.io/gfm6w/tutorial`, or open the folder in VS Code and choose *Reopen in Container*.
 - **Local, Linux or WSL 2.**
 
   ```bash
@@ -33,7 +33,7 @@ Set up before the session, the downloads take a few minutes. The [setup page](ht
   jupyter lab notebooks/
   ```
 
-Dynawo ships Linux and Windows builds only. On macOS use Codespaces or the dev container.
+Dynawo ships Linux and Windows builds only. On macOS use Codespaces or the container.
 
 ## Repository layout
 
