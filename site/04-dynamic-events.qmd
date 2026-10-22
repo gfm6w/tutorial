@@ -122,7 +122,10 @@ scenarios:
 The draw happens on the graph of the grid, so it can be inspected without running Dynawo. Datakit calls the same functions inside the pipeline, seeded per sample.
 
 ```{python}
-from gridfm_datakit.dynamic.event_perturbation import draw_events, parse_event_perturbation
+from gridfm_datakit.dynamic.event_perturbation import (
+    draw_events,
+    parse_event_perturbation,
+)
 from gridfm_datakit.dynamic.placement import EventGraph
 
 network = pp.network.load("../data/ieee14/IEEE14.iidm")
@@ -236,7 +239,9 @@ def curve(key, name):
     """Time and values of one variable for one sample, without the NaN padding."""
     i = slice_of[key]
     n = meta["timesteps_per_scenario"][i]
-    return store["time"][i, :n], store["curves"][i, meta["variable_names"].index(name), :n]
+    return store["time"][i, :n], store["curves"][
+        i, meta["variable_names"].index(name), :n
+    ]
 
 
 print(len(slice_of), "samples")
@@ -280,7 +285,9 @@ Every sample now holds three aligned pieces: the Parquet initial state, the even
 key = list(slice_of)[5]
 print("sample", dict(zip(KEYS, key)))
 print("initial demand", round(bus.set_index(KEYS).loc[key].Pd.sum(), 1), "MW")
-events.set_index(KEYS).loc[[key], ["scenario", "event_name", "static_id", "start_time", "params"]]
+events.set_index(KEYS).loc[
+    [key], ["scenario", "event_name", "static_id", "start_time", "params"]
+]
 ```
 
 ## Your turn
@@ -301,7 +308,10 @@ events:
     params:
       delta_u: {distribution: uniform, low: -0.05, high: 0.05}
 """)
-extended = {**event_perturbation, "scenarios": event_perturbation["scenarios"] + [voltage_step]}
+extended = {
+    **event_perturbation,
+    "scenarios": event_perturbation["scenarios"] + [voltage_step],
+}
 spec = parse_event_perturbation(extended, start_time=0.0, stop_time=10.0)
 
 rng = np.random.default_rng(0)

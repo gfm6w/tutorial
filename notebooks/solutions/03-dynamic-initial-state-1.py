@@ -1,5 +1,8 @@
 nadir = pd.Series(
-    {key: curve(key, "_GEN____1_SM_generator_omegaPu_value")[1].min() for key in slice_of}
+    {
+        key: curve(key, "_GEN____1_SM_generator_omegaPu_value")[1].min()
+        for key in slice_of
+    }
 )
 nadir.index.names = KEYS
 table = pd.DataFrame({"demand": demand, "nadir": nadir}).dropna().reset_index()
