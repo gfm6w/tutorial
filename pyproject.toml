@@ -21,7 +21,15 @@ dev = ["ruff==0.17.2"]
 [tool.ruff]
 line-length = 88
 target-version = "py310"
-extend-exclude = ["notebooks/*.ipynb", "notebooks/solutions", "site"]
+extend-exclude = ["site"]
+
+[tool.ruff.format]
+exclude = ["notebooks/solutions/*.py"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "B", "UP", "SIM", "C4", "PIE", "RET", "PTH", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"notebooks/*.ipynb" = ["E402"]
+"notebooks/solutions/*.py" = ["E402", "E703", "F821"]
+"notebooks/03-dynamic-initial-state.ipynb" = ["F401"]
