@@ -40,7 +40,9 @@ Both projects started at RTE, the French transmission system operator, and are d
 | Simulations | Load flow (OpenLoadFlow), security analysis, sensitivities, short circuit, remedial action optimizer | Short-term stability (DynaSwing), long-term stability (DynaWaltz), steady state with automata (DynaFlow) |
 | Home | [powsybl.org](https://www.powsybl.org), an LF Energy project | [dynawo.github.io](https://dynawo.github.io) |
 
+::: {.center}
 ![](assets/logos/powsybl-logo.png){width=180} &nbsp;&nbsp;&nbsp; ![](assets/logos/dynawo-logo.png){width=150} &nbsp;&nbsp;&nbsp; ![](assets/logos/lf-energy-logo.png){width=150}
+:::
 
 ## Why GridFM-Datakit integrates them
 
