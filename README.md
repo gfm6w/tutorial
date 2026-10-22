@@ -41,16 +41,25 @@ Dynawo ships Linux and Windows builds only. On macOS use Codespaces or the dev c
 notebooks/        the four notebooks, exercises left to fill in
 helpers.py        plot style shared by the notebooks
 data/ieee14/      IEEE 14-bus case with its Dynawo models and parameters
-scripts/          setup check, Dynawo installer, notebook and site builders
+scripts/          setup check and Dynawo installer
+gfm6w/            the gfm6w command, builds the notebooks and the site
 site/             Quarto sources of the notebooks and of the website
 .devcontainer/    container with Python, Julia, PowerModels and Dynawo
 ```
 
-The notebooks are generated from the Quarto sources in `site/`. Edit the `.qmd` files, then rebuild.
+## Editing the tutorial
+
+`site/*.qmd` is the only source. The notebooks and the website are both built from it by the `gfm6w` command, so never edit a notebook by hand: CI rejects a notebook that does not match its source.
 
 ```bash
-bash scripts/build.sh          # execute the pages, render the site, regenerate the notebooks
+pip install -e .        # once, in the tutorial environment, adds the gfm6w command
+gfm6w notebooks         # regenerate notebooks/, seconds, nothing runs
+gfm6w test 2            # run notebook 2 as a participant would, solutions filled in
+gfm6w build             # execute the pages, render the website, regenerate notebooks/
+gfm6w publish -o ../gfm6w.github.io
 ```
+
+Every command reads the pages from `-i` (default `site/`) and writes to `-o` (default `notebooks/` or `site/_site`), `gfm6w COMMAND --help` gives the details. Run `notebooks` and `test` while writing, `build` before opening a pull request, and commit the notebooks and `site/_freeze` with the source. Images go in `site/assets/` and are embedded in the notebooks at the width set in the source, `![](assets/logo.png){width=150}`.
 
 ## Credits and data
 

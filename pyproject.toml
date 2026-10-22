@@ -9,5 +9,8 @@ description = "Build tools of the GridFM Porto tutorial"
 requires-python = ">=3.10"
 dependencies = ["nbclient", "nbformat", "pillow", "pyyaml"]
 
+[project.scripts]
+gfm6w = "gfm6w.cli:main"
+
 [tool.setuptools]
 packages = ["gfm6w"]
