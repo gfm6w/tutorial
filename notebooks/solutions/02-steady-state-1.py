@@ -11,6 +11,7 @@ lines_only = {
 Path("outputs/part2/lines_only.yaml").write_text(yaml.safe_dump(lines_only))
 
 import subprocess
+import sys
 
 command = [
     sys.executable,

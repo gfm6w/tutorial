@@ -1,3 +1,5 @@
+from helpers import PALETTE
+
 nadir = pd.Series(
     {
         key: curve(key, "_GEN____1_SM_generator_omegaPu_value")[1].min()

@@ -32,4 +32,3 @@ select = ["E", "W", "F", "I", "B", "UP", "SIM", "C4", "PIE", "RET", "PTH", "RUF"
 [tool.ruff.lint.per-file-ignores]
 "notebooks/*.ipynb" = ["E402"]
 "notebooks/solutions/*.py" = ["E402", "E703", "F821"]
-"notebooks/03-dynamic-initial-state.ipynb" = ["F401"]
