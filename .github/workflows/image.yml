@@ -8,7 +8,6 @@ on:
       - ".dockerignore"
       - ".github/workflows/image.yml"
       - "data/**"
-      - "helpers.py"
       - "notebooks/**"
       - "requirements.txt"
       - "scripts/**"
