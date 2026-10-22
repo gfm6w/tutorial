@@ -1,5 +1,5 @@
 gridfm-datakit[dynamic] @ git+https://github.com/yemine0x01/gridfm-datakit@gfm6wt
-pypowsybl==1.15.*
+pypowsybl==1.16.*
 jupyterlab
 matplotlib
 pandas
