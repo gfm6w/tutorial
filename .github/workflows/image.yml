@@ -12,6 +12,7 @@ on:
       - "notebooks/**"
       - "requirements.txt"
       - "scripts/**"
+      - "site/assets/js/**"
   workflow_dispatch:
 
 concurrency:
