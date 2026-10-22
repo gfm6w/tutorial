@@ -14,14 +14,16 @@ so a notebook shows them wherever it is opened. They are PNG or JPEG, since
 GitHub drops SVG data URIs. Links between parts point at the notebooks, other
 pages at the site. `#|` options are dropped and cell IDs are numbered, so a
 rebuild only diffs what changed. Files are UTF-8 with LF line ends on every
-platform.
+platform. `formatted` runs the code chunks of a page through ruff format as
+notebook cells, which keeps the trailing semicolon that hides a plot's repr.
 """
 
 import base64
 import io
 import re
+import subprocess
+import sys
 import textwrap
-from pathlib import Path
 
 import nbformat
 import yaml
@@ -39,7 +41,7 @@ CHUNK = re.compile(r"^```\{python\}\s*\n(.*?)^```\s*$", re.S | re.M)
 SOLUTION = re.compile(
     r"^:::+\s*\{\.callout-\w+[^}]*\.solution[^}]*\}\s*\n(.*?)^:::+\s*$", re.S | re.M
 )
-CALLOUT = re.compile(r'^:::+\s*\{\.callout-(\w+)([^}]*)\}\s*$')
+CALLOUT = re.compile(r"^:::+\s*\{\.callout-(\w+)([^}]*)\}\s*$")
 TITLE = re.compile(r'title="([^"]*)"')
 FENCE = re.compile(r"^:::+\s*(\{[^}]*\})?\s*$")
 CENTER = re.compile(r"\.center\b")
@@ -148,9 +150,7 @@ def header(meta, source):
         lines.append(f"**{meta['subtitle']}**")
     if meta.get("description"):
         lines.append(meta["description"])
-    lines.append(
-        f"Rendered version with every output: [{html}]({html})"
-    )
+    lines.append(f"Rendered version with every output: [{html}]({html})")
     return "\n\n".join(lines)
 
 
@@ -234,3 +234,40 @@ def write(source, out):
         path.write_text(text, encoding="utf-8", newline="\n")
         paths.append(path)
     return paths
+
+
+def formatted(source):
+    text = source.read_text(encoding="utf-8")
+    chunks = list(CHUNK.finditer(text))
+    heads, codes = [], []
+    for chunk in chunks:
+        lines = chunk.group(1).splitlines()
+        count = next(
+            (i for i, line in enumerate(lines) if not line.startswith("#|")), len(lines)
+        )
+        heads.append(lines[:count])
+        codes.append("\n".join(lines[count:]))
+    book = nbformat.v4.new_notebook(cells=[nbformat.v4.new_code_cell(c) for c in codes])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ruff",
+            "format",
+            "--stdin-filename",
+            "chunks.ipynb",
+            "-",
+        ],
+        input=nbformat.writes(book),
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    cells = nbformat.reads(result.stdout, as_version=4).cells
+    parts, position = [], 0
+    for chunk, head, cell in zip(chunks, heads, cells, strict=True):
+        parts.append(text[position : chunk.start(1)])
+        parts.append("\n".join([*head, cell.source]) + "\n")
+        position = chunk.end(1)
+    parts.append(text[position:])
+    return "".join(parts)

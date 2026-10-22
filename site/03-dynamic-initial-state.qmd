@@ -19,7 +19,7 @@ jupyter: python3
 
 ```{python}
 #| echo: false
-from helpers import PALETTE, setup
+from helpers import setup
 
 setup()
 ```
@@ -80,7 +80,13 @@ The variables table says what to record. A `Curve` is a full time series. We rec
 
 ```{python}
 bus_ids = [f"_BUS{'_' * (5 - len(str(i)))}{i}_TN" for i in range(1, 15)]
-machines = ["_GEN____1_SM", "_GEN____2_SM", "_GEN____3_SM", "_GEN____6_SM", "_GEN____8_SM"]
+machines = [
+    "_GEN____1_SM",
+    "_GEN____2_SM",
+    "_GEN____3_SM",
+    "_GEN____6_SM",
+    "_GEN____8_SM",
+]
 variables = pd.DataFrame(
     [("Curve", b, "U_value") for b in bus_ids]
     + [("Curve", g, "generator_omegaPu_value") for g in machines],
@@ -202,7 +208,7 @@ A failed optimal power flow, power flow or simulation drops its sample, so slice
 
 ```{python}
 KEYS = ["scenario_index", "perturbation_index", "event_index"]
-key_columns = zip(*(np.asarray(store[k]) for k in KEYS))
+key_columns = zip(*(np.asarray(store[k]) for k in KEYS), strict=True)
 slice_of = {tuple(int(v) for v in key): i for i, key in enumerate(key_columns)}
 
 
@@ -226,15 +232,23 @@ demand = bus.groupby(KEYS).Pd.sum()
 norm = plt.Normalize(demand.min(), demand.max())
 cmap = plt.cm.colors.ListedColormap(plt.cm.Blues(np.linspace(0.35, 1, 256)))
 
-fig, (ax_u, ax_w) = plt.subplots(2, 1, figsize=(10, 7), sharex=True, layout="constrained")
+fig, (ax_u, ax_w) = plt.subplots(
+    2, 1, figsize=(10, 7), sharex=True, layout="constrained"
+)
 for key in slice_of:
     color = cmap(norm(demand[key]))
     ax_u.plot(*curve(key, "NETWORK__BUS____4_TN_U_value"), color=color, linewidth=1.2)
-    ax_w.plot(*curve(key, "_GEN____1_SM_generator_omegaPu_value"), color=color, linewidth=1.2)
+    ax_w.plot(
+        *curve(key, "_GEN____1_SM_generator_omegaPu_value"), color=color, linewidth=1.2
+    )
 ax_u.set(title="Voltage at bus 4", ylabel="kV")
 ax_w.set(title="Rotor speed, generator 1", xlabel="time (s)", ylabel="pu", xlim=(0, 10))
-fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=cmap), ax=[ax_u, ax_w],
-             label="total demand (MW)", shrink=0.6)
+fig.colorbar(
+    plt.cm.ScalarMappable(norm=norm, cmap=cmap),
+    ax=[ax_u, ax_w],
+    label="total demand (MW)",
+    shrink=0.6,
+)
 ```
 
 The operating point shapes the response. The topology variants add a second spread on top, since each one changes the paths the power can take, and one of them departs near the end of the window. Rare cases like that one are exactly what a dataset needs to contain.
@@ -250,7 +264,10 @@ initial = bus.set_index(KEYS)
 
 X = np.stack([initial.loc[key, features].to_numpy() for key in slice_of])
 Y = np.stack(
-    [[np.interp(grid_t, *curve(key, name)) for name in meta["variable_names"]] for key in slice_of]
+    [
+        [np.interp(grid_t, *curve(key, name)) for name in meta["variable_names"]]
+        for key in slice_of
+    ]
 )
 print("X", X.shape, "(samples, buses, features)")
 print("Y", Y.shape, "(samples, curves, time steps)")
@@ -265,8 +282,13 @@ For every sample, compute the lowest rotor speed of generator 1 during the run. 
 ::: {.callout-note .solution collapse="true" title="Show a solution"}
 ```{python}
 #| tags: [solution]
+from helpers import PALETTE
+
 nadir = pd.Series(
-    {key: curve(key, "_GEN____1_SM_generator_omegaPu_value")[1].min() for key in slice_of}
+    {
+        key: curve(key, "_GEN____1_SM_generator_omegaPu_value")[1].min()
+        for key in slice_of
+    }
 )
 nadir.index.names = KEYS
 table = pd.DataFrame({"demand": demand, "nadir": nadir}).dropna().reset_index()

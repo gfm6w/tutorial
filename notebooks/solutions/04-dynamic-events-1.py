@@ -7,7 +7,10 @@ events:
     params:
       delta_u: {distribution: uniform, low: -0.05, high: 0.05}
 """)
-extended = {**event_perturbation, "scenarios": event_perturbation["scenarios"] + [voltage_step]}
+extended = {
+    **event_perturbation,
+    "scenarios": event_perturbation["scenarios"] + [voltage_step],
+}
 spec = parse_event_perturbation(extended, start_time=0.0, stop_time=10.0)
 
 rng = np.random.default_rng(0)

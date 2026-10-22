@@ -79,9 +79,14 @@ class Zoomable:
             count=1,
         )
         svg = svg.replace("<svg", f'<svg id="{uid}" width="100%" height="100%"', 1)
+        box = (
+            f"height:{self.height}px;border:1px solid {GRID};"
+            "border-radius:6px;overflow:hidden"
+        )
+        note = f"font-size:0.8rem;color:{MUTED};margin-top:0.3rem"
         return f"""
-<div style="height:{self.height}px;border:1px solid {GRID};border-radius:6px;overflow:hidden">{svg}</div>
-<p style="font-size:0.8rem;color:{MUTED};margin-top:0.3rem">Scroll to zoom, drag to pan.</p>
+<div style="{box}">{svg}</div>
+<p style="{note}">Scroll to zoom, drag to pan.</p>
 <script>
 (function () {{
   if (!window.svgPanZoom) {{
