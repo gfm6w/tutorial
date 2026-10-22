@@ -7,3 +7,5 @@ site/.quarto/
 site/*.quarto_ipynb
 site/*_files/
 *.deb
+*.egg-info/
+build/
