@@ -1,4 +1,4 @@
-gridfm-datakit[dynamic] @ git+https://github.com/yemine0x01/gridfm-datakit@gfm6wt
+gridfm-datakit[dynamic] @ git+https://github.com/yemine0x01/gridfm-datakit@d9e4ebde2462f7dfcd2db1e459025ebd0e19280c
 pypowsybl==1.16.*
 jupyterlab
 matplotlib
