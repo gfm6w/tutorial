@@ -37,7 +37,8 @@ pip install -e ".[dev]"        # adds the gfm6w command and ruff
 gfm6w notebooks                # regenerate notebooks/ and notebooks/solutions/
 gfm6w test 2                   # run notebook 2, solutions filled in
 gfm6w build                    # render the website and the notebooks
-ruff format . && ruff check .  # format and lint the Python code
+gfm6w format                   # format the code of the pages with ruff
+ruff format . && ruff check .  # format and lint the Python code and notebooks
 ```
 
 Commit the notebooks and `site/_freeze` with the source. Notebook images are PNG or JPEG. `gfm6w --help` lists the rest.
