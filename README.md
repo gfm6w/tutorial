@@ -41,6 +41,10 @@ gfm6w build         # render the website and the notebooks
 
 Commit the notebooks and `site/_freeze` with the source. Notebook images are PNG or JPEG. `gfm6w --help` lists the rest.
 
+## Licence
+
+Code (`gfm6w/`, `helpers.py`, `scripts/`) is under [Apache-2.0](LICENSE). Pages, notebooks and figures are under [CC BY 4.0](LICENSE-CC-BY-4.0). Data, fonts and libraries keep the licences listed below, and the logos belong to their owners.
+
 ## Credits
 
 - IEEE 14-bus case and Dynawo inputs from the GridFM-Datakit dynamic example (Apache-2.0), `IDAOrder2` solver set from the Dynawo IEEE14 fault example.
