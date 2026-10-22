@@ -33,10 +33,11 @@ Dynawo has no macOS build, so on a Mac use Codespaces or Docker.
 `site/*.qmd` is the only source. Never edit `notebooks/`, the notebooks and their solutions are generated and CI rejects a file that does not match its source.
 
 ```bash
-pip install -e .    # adds the gfm6w command
-gfm6w notebooks     # regenerate notebooks/ and notebooks/solutions/
-gfm6w test 2        # run notebook 2, solutions filled in
-gfm6w build         # render the website and the notebooks
+pip install -e ".[dev]"        # adds the gfm6w command and ruff
+gfm6w notebooks                # regenerate notebooks/ and notebooks/solutions/
+gfm6w test 2                   # run notebook 2, solutions filled in
+gfm6w build                    # render the website and the notebooks
+ruff format . && ruff check .  # format and lint the Python code
 ```
 
 Commit the notebooks and `site/_freeze` with the source. Notebook images are PNG or JPEG. `gfm6w --help` lists the rest.
