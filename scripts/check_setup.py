@@ -4,10 +4,13 @@ Usage: python scripts/check_setup.py
 """
 
 import importlib.metadata as md
+import logging
 import time
 from pathlib import Path
 
 IEEE14 = Path(__file__).resolve().parent.parent / "data" / "ieee14"
+
+logging.getLogger("powsybl").setLevel(logging.ERROR)
 
 
 def versions():
