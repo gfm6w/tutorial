@@ -10,7 +10,7 @@ notebooks, other pages at the site. `#|` options are dropped and cell IDs are
 numbered, so a rebuild only diffs what changed. Files are UTF-8 with LF line
 ends on every platform.
 
-Usage: python scripts/make_notebooks.py [NAME.qmd ...], or through build.py.
+Usage: python -m gfm6w.notebooks [NAME.qmd ...]
 """
 
 import base64
