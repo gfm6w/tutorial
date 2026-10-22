@@ -39,7 +39,7 @@ CHUNK = re.compile(r"^```\{python\}\s*\n(.*?)^```\s*$", re.S | re.M)
 SOLUTION = re.compile(
     r"^:::+\s*\{\.callout-\w+[^}]*\.solution[^}]*\}\s*\n(.*?)^:::+\s*$", re.S | re.M
 )
-CALLOUT = re.compile(r'^:::+\s*\{\.callout-(\w+)([^}]*)\}\s*$')
+CALLOUT = re.compile(r"^:::+\s*\{\.callout-(\w+)([^}]*)\}\s*$")
 TITLE = re.compile(r'title="([^"]*)"')
 FENCE = re.compile(r"^:::+\s*(\{[^}]*\})?\s*$")
 CENTER = re.compile(r"\.center\b")
@@ -148,9 +148,7 @@ def header(meta, source):
         lines.append(f"**{meta['subtitle']}**")
     if meta.get("description"):
         lines.append(meta["description"])
-    lines.append(
-        f"Rendered version with every output: [{html}]({html})"
-    )
+    lines.append(f"Rendered version with every output: [{html}]({html})")
     return "\n\n".join(lines)
 
 

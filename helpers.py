@@ -56,7 +56,9 @@ def setup():
     logging.getLogger("powsybl").setLevel(logging.ERROR)
 
 
-SVG_PAN_ZOOM = "https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.2/dist/svg-pan-zoom.min.js"
+SVG_PAN_ZOOM = (
+    "https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.2/dist/svg-pan-zoom.min.js"
+)
 
 
 class Zoomable:
