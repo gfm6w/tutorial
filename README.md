@@ -39,7 +39,7 @@ gfm6w test 2        # run notebook 2, solutions filled in
 gfm6w build         # render the website and the notebooks
 ```
 
-Commit the notebooks and `site/_freeze` with the source. Notebook images are PNG or JPEG. `gfm6w --help` lists the rest.
+Commit the notebooks and `site/_freeze` with the source. Dependencies go in `requirements.in`, then `uv pip compile requirements.in --universal --python-version 3.10 -o requirements.txt` refreshes the lock. Notebook images are PNG or JPEG. `gfm6w --help` lists the rest.
 
 ## Credits
 
