@@ -4,18 +4,18 @@ A `.solution` callout, its code and its text, goes to solutions/NAME-K.py next
 to the notebook, the text as comments. The notebook gets an exercise cell that
 can `%load` it and a link to it, since GitHub shows a <details> block open.
 `solutions` puts the code back as a plain cell instead. Cells with
-`eval: false` are dropped. Quarto
-markup becomes plain Markdown: callouts turn into quotes, chip spans into a
-dotted line, a `.center` div becomes an `align="center"` HTML block with no
-blank line inside, since GitHub left-aligns a paragraph, other div fences go.
-Local images resolve against the folder of the page and are inlined as data
-URIs at the width the page gives them, rasters downscaled to twice that width,
-so a notebook shows them wherever it is opened. They are PNG or JPEG, since
-GitHub drops SVG data URIs. Links between parts point at the notebooks, other
-pages at the site. `#|` options are dropped and cell IDs are numbered, so a
-rebuild only diffs what changed. Files are UTF-8 with LF line ends on every
-platform. `formatted` runs the code chunks of a page through ruff format as
-notebook cells, which keeps the trailing semicolon that hides a plot's repr.
+`eval: false` are dropped. Quarto markup becomes plain Markdown: callouts turn
+into quotes, chip spans into a dotted line, a `.center` div becomes an
+`align="center"` HTML block with no blank line inside, since GitHub left-aligns
+a paragraph, other div fences go. Local images resolve against the folder of
+the page and are inlined as data URIs at the width the page must give them,
+downscaled to twice that width when that makes them smaller, so a notebook
+shows them wherever it is opened. They are PNG or JPEG, since GitHub drops SVG
+data URIs. Links between parts point at the notebooks, other pages at the site.
+`#|` options are dropped and cell IDs are numbered, so a rebuild only diffs
+what changed. Files are UTF-8 with LF line ends on every platform. `formatted`
+runs the code chunks of a page through ruff format as notebook cells, which
+keeps the trailing semicolon that hides a plot's repr.
 """
 
 import base64
@@ -76,20 +76,20 @@ def image(match, folder):
     if source.suffix not in MIME:
         raise ValueError(f"{path}: notebook images are PNG or JPEG")
     width = WIDTH.search(attrs)
+    if not width:
+        raise ValueError(f"{path}: notebook images need a width")
     data = source.read_bytes()
-    if width:
-        picture = Image.open(source)
-        size = 2 * int(width.group(1))
-        if picture.width > size:
-            picture = picture.resize(
-                (size, round(picture.height * size / picture.width)),
-                Image.LANCZOS,
-            )
-            buffer = io.BytesIO()
-            picture.save(buffer, format="PNG", optimize=True)
-            data = buffer.getvalue()
+    picture = Image.open(source)
+    size = 2 * int(width.group(1))
+    if picture.width > size:
+        picture = picture.resize(
+            (size, round(picture.height * size / picture.width)), Image.LANCZOS
+        )
+        buffer = io.BytesIO()
+        picture.save(buffer, format="PNG", optimize=True)
+        data = min(data, buffer.getvalue(), key=len)
     uri = f"data:{MIME[source.suffix]};base64,{base64.b64encode(data).decode()}"
-    size = f'width="{width.group(1)}"' if width else 'style="width:100%"'
+    size = f'width="{width.group(1)}"'
     fig_alt = FIG_ALT.search(attrs)
     tag = f'<img src="{uri}" alt="{fig_alt.group(1) if fig_alt else alt}" {size}>'
     return (

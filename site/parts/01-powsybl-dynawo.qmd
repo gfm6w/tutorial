@@ -49,7 +49,7 @@ A foundation model learns what its data shows it. Datakit already produced large
 2. **Industrial-grade physics out.** OpenLoadFlow and Dynawo are the solvers used on real operational studies, which narrows the gap between synthetic data and the field.
 3. **Time as a new modality.** Dynawo turns each operating point into a trajectory, and randomized disturbances become a new axis of data augmentation.
 
-![The datakit pipeline. PowSyBl reads the grid and solves the power flow, Dynawo simulates the time domain.](../assets/pipeline.png){fig-alt="Pipeline from grid model through PowSyBl, datakit perturbation, OPF, power flow, to a steady-state dataset and through Dynawo to trajectories."}
+![The datakit pipeline. PowSyBl reads the grid and solves the power flow, Dynawo simulates the time domain.](../assets/pipeline.png){width=800 fig-alt="Pipeline from grid model through PowSyBl, datakit perturbation, OPF, power flow, to a steady-state dataset and through Dynawo to trajectories."}
 
 ::: {.callout-note title="The same identifiers everywhere"}
 Every element keeps the ID it has in the network file, from the PowSyBl network to the Dynawo model mapping and the output tables. That is what lets a configuration file say "disconnect `_GEN____2_SM` at 1 s".
