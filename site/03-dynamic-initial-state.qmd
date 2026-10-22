@@ -211,7 +211,7 @@ A failed optimal power flow, power flow or simulation drops its sample, so slice
 
 ```{python}
 KEYS = ["scenario_index", "perturbation_index", "event_index"]
-key_columns = zip(*(np.asarray(store[k]) for k in KEYS))
+key_columns = zip(*(np.asarray(store[k]) for k in KEYS), strict=True)
 slice_of = {tuple(int(v) for v in key): i for i, key in enumerate(key_columns)}
 
 
