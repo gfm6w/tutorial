@@ -58,7 +58,7 @@ def setup():
 
 
 SVG_PAN_ZOOM = (
-    Path(__file__).parent / "site" / "assets" / "js" / "svg-pan-zoom.min.js"
+    Path(__file__).parent.parent / "site" / "assets" / "js" / "svg-pan-zoom.min.js"
 ).read_text(encoding="utf-8")
 
 

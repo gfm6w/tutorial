@@ -43,7 +43,7 @@ Commit the notebooks and `site/_freeze` with the source. Dependencies go in `req
 
 ## Licence
 
-Code (`gfm6w/`, `helpers.py`, `scripts/`) is under [Apache-2.0](LICENSE). Pages, notebooks and figures are under [CC BY 4.0](LICENSE-CC-BY-4.0). Data, fonts and libraries keep the licences listed below, and the logos belong to their owners.
+Code (`gfm6w/`, `notebooks/helpers.py`, `scripts/`) is under [Apache-2.0](LICENSE). Pages, notebooks and figures are under [CC BY 4.0](LICENSE-CC-BY-4.0). Data, fonts and libraries keep the licences listed below, and the logos belong to their owners.
 
 ## Credits
 
