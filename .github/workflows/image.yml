@@ -3,9 +3,15 @@ name: Image
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "site/**"
-      - "**.md"
+    paths:
+      - ".devcontainer/**"
+      - ".dockerignore"
+      - ".github/workflows/image.yml"
+      - "data/**"
+      - "helpers.py"
+      - "notebooks/**"
+      - "requirements.txt"
+      - "scripts/**"
   workflow_dispatch:
 
 jobs:
