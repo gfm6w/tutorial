@@ -11,12 +11,12 @@
 
 Every command reads the pages from -i (default site/). The notebooks go to -o
 (default notebooks/). Quarto renders the website into site/_site, html copies
-it to -o if given. build takes --notebooks and --html instead. test runs the notebooks from -o, which sits
-next to data/ for their relative paths to resolve. The interpreter gfm6w is
-installed in runs the pages and the notebooks. Quarto reuses site/_freeze for
-pages whose source did not change, `quarto render site/NAME.qmd` reruns one.
-Defaults resolve from the package, so gfm6w is installed editable from the
-clone.
+it to -o if given. build takes --notebooks and --html instead. test runs the
+notebooks from -o, which sits next to data/ for their relative paths to
+resolve. The interpreter gfm6w is installed in runs the pages and the
+notebooks. Quarto reuses site/_freeze for pages whose source did not change,
+`quarto render site/NAME.qmd` reruns one. Defaults resolve from the package,
+so gfm6w is installed editable from the clone.
 """
 
 import argparse

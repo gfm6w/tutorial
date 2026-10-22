@@ -4,12 +4,15 @@ A code cell tagged `solution` becomes an empty cell followed by the solution in
 a <details> block, and its collapsed callout goes, unless `solutions` asks for
 the solution as a plain cell. Cells with `eval: false` are dropped. Quarto
 markup becomes plain Markdown: callouts turn into quotes, chip spans into a
-dotted line, div fences go. Local images resolve against the folder of the
-page and are inlined as data URIs at the width the page gives them, rasters
-downscaled to twice that width, so a notebook shows them wherever it is opened.
-Links between parts point at the notebooks, other pages at the site. `#|`
-options are dropped and cell IDs are numbered, so a rebuild only diffs what
-changed. Files are UTF-8 with LF line ends on every platform.
+dotted line, a `.center` div becomes an `align="center"` HTML block with no
+blank line inside, since GitHub left-aligns a paragraph, other div fences go.
+Local images resolve against the folder of the page and are inlined as data
+URIs at the width the page gives them, rasters downscaled to twice that width,
+so a notebook shows them wherever it is opened. They are PNG or JPEG, since
+GitHub drops SVG data URIs. Links between parts point at the notebooks, other
+pages at the site. `#|` options are dropped and cell IDs are numbered, so a
+rebuild only diffs what changed. Files are UTF-8 with LF line ends on every
+platform.
 """
 
 import base64
@@ -33,13 +36,14 @@ CHUNK = re.compile(r"^```\{python\}\s*\n(.*?)^```\s*$", re.S | re.M)
 CALLOUT = re.compile(r'^:::+\s*\{\.callout-(\w+)([^}]*)\}\s*$')
 TITLE = re.compile(r'title="([^"]*)"')
 FENCE = re.compile(r"^:::+\s*(\{[^}]*\})?\s*$")
+CENTER = re.compile(r"\.center\b")
 SPAN = re.compile(r"(?<!!)\[([^\]]+)\]\{\.[^}]*\}")
 PART_LINK = re.compile(r"\]\((\d\d-[\w-]+)\.qmd")
 PAGE_LINK = re.compile(r"\]\(([\w-]+)\.qmd")
 IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)(\{[^}]*\})?")
 WIDTH = re.compile(r"\bwidth=\"?(\d+)")
 FIG_ALT = re.compile(r'fig-alt="([^"]*)"')
-MIME = {".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg"}
+MIME = {".png": "image/png", ".jpg": "image/jpeg"}
 LABELS = {
     "note": "Note",
     "tip": "Tip",
@@ -61,9 +65,11 @@ def image(match, folder):
     if "://" in path:
         return match.group(0)
     source = folder / path
+    if source.suffix not in MIME:
+        raise ValueError(f"{path}: notebook images are PNG or JPEG")
     width = WIDTH.search(attrs)
     data = source.read_bytes()
-    if source.suffix != ".svg" and width:
+    if width:
         picture = Image.open(source)
         size = 2 * int(width.group(1))
         if picture.width > size:
@@ -84,9 +90,11 @@ def image(match, folder):
 
 
 def markdown(text, folder):
-    lines, quote = [], False
+    lines, quote, divs = [], False, []
     for line in text.splitlines():
         callout = CALLOUT.match(line)
+        if callout:
+            divs.append(False)
         if callout and ".solution" in callout.group(2):
             continue
         if callout:
@@ -98,8 +106,16 @@ def markdown(text, folder):
             lines.append(">")
             quote = True
             continue
-        if FENCE.match(line):
+        fence = FENCE.match(line)
+        if fence and fence.group(1):
+            center = bool(CENTER.search(fence.group(1)))
+            divs.append(center)
+            lines.extend(['<div align="center">'] if center else [])
+            continue
+        if fence:
             quote = False
+            if divs and divs.pop():
+                lines.append("</div>")
             continue
         spans = SPAN.findall(line)
         if spans and not SPAN.sub("", line).strip():

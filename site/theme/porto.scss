@@ -310,3 +310,10 @@ details.code-fold > summary {
     width: auto;
   }
 }
+
+.center {
+  text-align: center;
+  img {
+    vertical-align: middle;
+  }
+}
