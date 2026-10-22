@@ -4,8 +4,8 @@ __pycache__/
 outputs/
 site/_site/
 site/.quarto/
-site/*.quarto_ipynb
-site/*_files/
+site/**/*.quarto_ipynb
+site/**/*_files/
 *.deb
 *.egg-info/
 build/

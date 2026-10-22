@@ -53,8 +53,9 @@ def notebooks(site, out):
             print(path)
 
 
-def frozen(source):
-    path = source.parent / "_freeze" / source.stem / "execute-results" / "html.json"
+def frozen(site, source):
+    page = source.relative_to(site).with_suffix("")
+    path = site / "_freeze" / page / "execute-results" / "html.json"
     if not path.exists():
         return False
     digest = hashlib.md5(source.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
@@ -68,7 +69,7 @@ def check(site, out):
         for name, text in nb.outputs(source).items()
         if not (out / name).exists() or (out / name).read_text(encoding="utf-8") != text
     ]
-    unrendered = [source for source in pages(site) if not frozen(source)]
+    unrendered = [source for source in pages(site) if not frozen(site, source)]
     for path in stale:
         print(f"{path} is out of date")
     for source in unrendered:

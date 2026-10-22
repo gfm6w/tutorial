@@ -1,15 +1,16 @@
 project:
   type: website
   output-dir: _site
+  execute-dir: project
   resources:
     - assets/**
   render:
     - index.qmd
     - setup.qmd
-    - 01-powsybl-dynawo.qmd
-    - 02-steady-state.qmd
-    - 03-dynamic-initial-state.qmd
-    - 04-dynamic-events.qmd
+    - parts/01-powsybl-dynawo.qmd
+    - parts/02-steady-state.qmd
+    - parts/03-dynamic-initial-state.qmd
+    - parts/04-dynamic-events.qmd
 
 execute:
   freeze: auto
@@ -31,13 +32,13 @@ website:
         text: Overview
       - href: setup.qmd
         text: Setup
-      - href: 01-powsybl-dynawo.qmd
+      - href: parts/01-powsybl-dynawo.qmd
         text: "1 · PowSyBl & Dynawo"
-      - href: 02-steady-state.qmd
+      - href: parts/02-steady-state.qmd
         text: "2 · Steady state"
-      - href: 03-dynamic-initial-state.qmd
+      - href: parts/03-dynamic-initial-state.qmd
         text: "3 · Initial states"
-      - href: 04-dynamic-events.qmd
+      - href: parts/04-dynamic-events.qmd
         text: "4 · Dynamic events"
     right:
       - icon: github
@@ -51,8 +52,6 @@ format:
   html:
     theme: [cosmo, theme/porto.scss]
     css: theme/fonts.css
-    include-in-header:
-      text: <script src="assets/js/svg-pan-zoom.min.js"></script>
     title-block-banner: true
     toc: true
     toc-depth: 2
