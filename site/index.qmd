@@ -18,25 +18,25 @@ A hands-on tutorial on **PowSyBl** and **Dynawo**, two open-source, industrial-g
 
 ```{=html}
 <div class="agenda">
-<a class="session" href="01-powsybl-dynawo.html" style="--accent:#1486c2">
+<a class="session" href="parts/01-powsybl-dynawo.html" style="--accent:#1486c2">
 <span class="num">Part 1</span>
 <span class="name">PowSyBl & Dynawo</span>
 <span class="meta">What they are, and why GridFM-Datakit integrates them.</span>
 <span class="dur">15 min</span>
 </a>
-<a class="session" href="02-steady-state.html" style="--accent:#e07a1f">
+<a class="session" href="parts/02-steady-state.html" style="--accent:#e07a1f">
 <span class="num">Part 2</span>
 <span class="name">Steady-state datasets</span>
 <span class="meta">From a transmission grid to power flow samples, with PowSyBl.</span>
 <span class="dur">20 min</span>
 </a>
-<a class="session" href="03-dynamic-initial-state.html" style="--accent:#0f9b8e">
+<a class="session" href="parts/03-dynamic-initial-state.html" style="--accent:#0f9b8e">
 <span class="num">Part 3</span>
 <span class="name">Randomized initial states</span>
 <span class="meta">Dynawo trajectories from many operating points and topologies.</span>
 <span class="dur">20 min</span>
 </a>
-<a class="session" href="04-dynamic-events.html" style="--accent:#a8285a">
+<a class="session" href="parts/04-dynamic-events.html" style="--accent:#a8285a">
 <span class="num">Part 4</span>
 <span class="name">Randomized dynamic events</span>
 <span class="meta">Faults, trips and set-point steps drawn per sample.</span>

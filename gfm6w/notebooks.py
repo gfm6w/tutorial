@@ -31,10 +31,10 @@ from PIL import Image
 
 SITE_URL = "https://gfm6w.github.io"
 SOURCES = [
-    "01-powsybl-dynawo.qmd",
-    "02-steady-state.qmd",
-    "03-dynamic-initial-state.qmd",
-    "04-dynamic-events.qmd",
+    "parts/01-powsybl-dynawo.qmd",
+    "parts/02-steady-state.qmd",
+    "parts/03-dynamic-initial-state.qmd",
+    "parts/04-dynamic-events.qmd",
 ]
 
 CHUNK = re.compile(r"^```\{python\}\s*\n(.*?)^```\s*$", re.S | re.M)
@@ -47,7 +47,7 @@ FENCE = re.compile(r"^:::+\s*(\{[^}]*\})?\s*$")
 CENTER = re.compile(r"\.center\b")
 SPAN = re.compile(r"(?<!!)\[([^\]]+)\]\{\.[^}]*\}")
 PART_LINK = re.compile(r"\]\((\d\d-[\w-]+)\.qmd")
-PAGE_LINK = re.compile(r"\]\(([\w-]+)\.qmd")
+PAGE_LINK = re.compile(r"\]\((?:\.\./)*([\w-]+)\.qmd")
 IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)(\{[^}]*\})?")
 WIDTH = re.compile(r"\bwidth=\"?(\d+)")
 FIG_ALT = re.compile(r'fig-alt="([^"]*)"')
@@ -143,8 +143,13 @@ def options(source):
     return opts, "\n".join(code).strip()
 
 
+def page(source):
+    root = next(p for p in source.parents if (p / "_quarto.yml").exists())
+    return source.relative_to(root).with_suffix(".html").as_posix()
+
+
 def header(meta, source):
-    html = f"{SITE_URL}/{source.with_suffix('.html').name}"
+    html = f"{SITE_URL}/{page(source)}"
     lines = [f"# {meta['title']}"]
     if meta.get("subtitle"):
         lines.append(f"**{meta['subtitle']}**")
