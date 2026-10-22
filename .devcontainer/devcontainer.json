@@ -1,9 +1,6 @@
 {
   "name": "GridFM Porto tutorial",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-  },
+  "image": "ghcr.io/gfm6w/tutorial:latest",
   "hostRequirements": {
     "cpus": 4,
     "memory": "8gb"
