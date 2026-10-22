@@ -21,7 +21,6 @@ import base64
 import io
 import re
 import textwrap
-from pathlib import Path
 
 import nbformat
 import yaml
