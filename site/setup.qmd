@@ -6,7 +6,7 @@ toc: true
 ---
 
 ::: {.session-strip}
-[10 min, before the session]{.chip} [Python 3.10 to 3.12 · Julia · Dynawo 1.7.0]{.chip}
+[5 to 20 min, before the session]{.chip} [Python 3.10 to 3.12 · Julia · Dynawo 1.7.0]{.chip}
 :::
 
 The notebooks need three things next to Python. **pypowsybl** comes from pip. **Julia with PowerModels.jl** solves the optimal power flow inside GridFM-Datakit and installs itself on first use. **Dynawo** is a native simulator distributed as a zip archive. Pick the route that suits your machine.
@@ -15,7 +15,7 @@ The notebooks need three things next to Python. **pypowsybl** comes from pip. **
 |---|---|---|
 | [GitHub Codespaces](#codespaces) | Any browser | One click, a few minutes to start |
 | [Container](#container) | Any OS with Docker | One command |
-| [Local install](#local) | Linux, Windows through WSL 2 | About ten minutes |
+| [Local install](#local) | Linux, Windows through WSL 2 | 15 to 20 minutes |
 
 ::: {.callout-note title="macOS"}
 Dynawo ships Linux and Windows builds only. On a Mac, use Codespaces or the container.
@@ -67,7 +67,7 @@ The requirements pin GridFM-Datakit to the `gfm6wt` branch, which carries the dy
 gridfm_datakit setup_pm
 ```
 
-This downloads Julia if needed, then PowerModels.jl and Ipopt. Count a few minutes.
+This downloads Julia if needed, then PowerModels.jl and Ipopt, and compiles them. Count about ten minutes.
 
 ### 3. Dynawo
 
