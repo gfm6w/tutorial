@@ -20,9 +20,6 @@ jupyter: python3
 
 ```{python}
 #| echo: false
-import sys
-
-sys.path.insert(0, "..")
 from helpers import PALETTE, area_diagram, setup
 
 setup()
