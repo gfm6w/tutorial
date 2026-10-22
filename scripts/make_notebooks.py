@@ -3,19 +3,24 @@
 A code cell tagged `solution` becomes an empty cell followed by the solution in
 a <details> block, and its collapsed callout goes. Cells with `eval: false` are
 dropped. Quarto markup becomes plain Markdown: callouts turn into quotes, chip
-spans into a dotted line, div fences and image attributes go, asset paths point
-into site/, links between parts point at the notebooks. `#|` options are
-dropped and cell IDs are numbered, so a rebuild only diffs what changed.
+spans into a dotted line, div fences go. Local images are inlined as data URIs
+at the width the page gives them, rasters downscaled to twice that width, so a
+notebook shows them wherever it is opened. Links between parts point at the
+notebooks, other pages at the site. `#|` options are dropped and cell IDs are
+numbered, so a rebuild only diffs what changed.
 
 Usage: python scripts/make_notebooks.py [NAME.qmd ...]
 """
 
+import base64
+import io
 import re
 import sys
 from pathlib import Path
 
 import nbformat
 import yaml
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
@@ -33,8 +38,12 @@ CALLOUT = re.compile(r'^:::+\s*\{\.callout-(\w+)([^}]*)\}\s*$')
 TITLE = re.compile(r'title="([^"]*)"')
 FENCE = re.compile(r"^:::+\s*(\{[^}]*\})?\s*$")
 SPAN = re.compile(r"(?<!!)\[([^\]]+)\]\{\.[^}]*\}")
-QMD_LINK = re.compile(r"\]\((\d\d-[\w-]+)\.qmd")
-IMAGE_ATTRS = re.compile(r"(!\[[^\]]*\]\([^)]*\))\{[^}]*\}")
+PART_LINK = re.compile(r"\]\((\d\d-[\w-]+)\.qmd")
+PAGE_LINK = re.compile(r"\]\(([\w-]+)\.qmd")
+IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)(\{[^}]*\})?")
+WIDTH = re.compile(r"\bwidth=\"?(\d+)")
+FIG_ALT = re.compile(r'fig-alt="([^"]*)"')
+MIME = {".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg"}
 LABELS = {
     "note": "Note",
     "tip": "Tip",
@@ -49,6 +58,31 @@ def split_front_matter(text):
         return {}, text
     _, head, body = text.split("---", 2)
     return yaml.safe_load(head), body
+
+
+def image(match):
+    alt, path, attrs = match.group(1), match.group(2), match.group(3) or ""
+    if "://" in path:
+        return match.group(0)
+    source = SITE / path
+    width = WIDTH.search(attrs)
+    data = source.read_bytes()
+    if source.suffix != ".svg" and width:
+        picture = Image.open(source)
+        size = 2 * int(width.group(1))
+        if picture.width > size:
+            picture = picture.resize(
+                (size, round(picture.height * size / picture.width)),
+                Image.LANCZOS,
+            )
+            buffer = io.BytesIO()
+            picture.save(buffer, format="PNG", optimize=True)
+            data = buffer.getvalue()
+    uri = f"data:{MIME[source.suffix]};base64,{base64.b64encode(data).decode()}"
+    size = f'width="{width.group(1)}"' if width else 'style="width:100%"'
+    fig_alt = FIG_ALT.search(attrs)
+    tag = f'<img src="{uri}" alt="{fig_alt.group(1) if fig_alt else alt}" {size}>'
+    return f"{tag}\n\n*{alt}*" if alt and match.group(0) == match.string.strip() else tag
 
 
 def markdown(text):
@@ -72,9 +106,9 @@ def markdown(text):
         spans = SPAN.findall(line)
         if spans and not SPAN.sub("", line).strip():
             line = " · ".join(spans)
-        line = IMAGE_ATTRS.sub(r"\1", SPAN.sub(r"\1", line))
-        line = line.replace("](assets/", "](../site/assets/")
-        line = QMD_LINK.sub(r"](\1.ipynb", line)
+        line = IMAGE.sub(image, SPAN.sub(r"\1", line))
+        line = PART_LINK.sub(r"](\1.ipynb", line)
+        line = PAGE_LINK.sub(rf"]({SITE_URL}/\1.html", line)
         lines.append(("> " + line).rstrip() if quote else line)
     return "\n".join(lines).strip()
 
