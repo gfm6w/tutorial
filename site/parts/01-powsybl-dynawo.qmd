@@ -116,7 +116,7 @@ The load flow leaves `tap` at its set value and reports the position it chose in
 PowSyBl also draws the grid. The network explorer of pypowsybl-jupyter shows the network area diagram around a voltage level, with its flows, and the single line diagram of that voltage level. Pick another voltage level, or raise the depth to see more of the grid.
 
 ```{python}
-#| column: screen-inset
+#| column: page-left
 from pypowsybl_jupyter import network_explorer
 
 network_explorer(network)

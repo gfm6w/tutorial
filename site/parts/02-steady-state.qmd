@@ -86,7 +86,7 @@ ax.set(title="Voltage magnitude, base case", xlabel="pu", ylabel="buses");
 The network explorer at depth 7 draws the whole grid, one colour per voltage level. Lower the depth to focus on one voltage level. Several PEGASE buses share a voltage level, so the per-bus legends and the flow values are left out to keep it readable.
 
 ```{python}
-#| column: screen-inset
+#| column: page-left
 from pypowsybl_jupyter import network_explorer
 
 overview = pp.network.NadParameters(bus_legend=False, edge_info_included=False)
