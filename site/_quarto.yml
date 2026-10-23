@@ -41,6 +41,9 @@ website:
       - href: parts/04-dynamic-events.qmd
         text: "4 · Dynamic events"
     right:
+      - href: https://www.artelys.com
+        text: Artelys
+        aria-label: Artelys website
       - icon: github
         href: https://github.com/gfm6w/tutorial
         aria-label: Tutorial repository
