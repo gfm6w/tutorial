@@ -56,6 +56,19 @@ $toc-active-border: $gfm-blue;
     color: #ffffff !important;
     box-shadow: inset 0 -2px 0 $amber;
   }
+  .nav-link[href^="https://www.artelys.com"] {
+    width: 88px;
+    height: 40px;
+    margin-right: 0.5rem;
+    background: url("assets/logos/artelys-logo-white.png") center / contain
+      no-repeat;
+    opacity: 0.85;
+    color: transparent !important;
+    overflow: hidden;
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 /* Title banner */
