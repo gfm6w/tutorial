@@ -19,9 +19,16 @@ jupyter: python3
 
 ```{python}
 #| echo: false
-from helpers import MUTED, PALETTE, area_diagram, setup
+from helpers import MUTED, PALETTE, setup
 
 setup()
+```
+
+```{python}
+#| include: false
+import gfm6w.explorer
+
+gfm6w.explorer.install()
 ```
 
 ```{python}
@@ -76,18 +83,14 @@ ax = (buses.v_mag / buses.nominal_v).plot.hist(
 ax.set(title="Voltage magnitude, base case", xlabel="pu", ylabel="buses");
 ```
 
-The network area diagram draws the whole grid, one colour per voltage level. Several PEGASE buses share a voltage level, so the per-bus legends and the flow values are left out to keep it readable.
+The network explorer at depth 7 draws the whole grid, one colour per voltage level. Lower the depth to focus on one voltage level. Several PEGASE buses share a voltage level, so the per-bus legends and the flow values are left out to keep it readable.
 
 ```{python}
-#| eval: false
-overview = pp.network.NadParameters(bus_legend=False, edge_info_included=False)
-grid.get_network_area_diagram(nad_parameters=overview)
-```
+#| column: screen-inset
+from pypowsybl_jupyter import network_explorer
 
-```{python}
-#| echo: false
 overview = pp.network.NadParameters(bus_legend=False, edge_info_included=False)
-area_diagram(grid, spread=1, height=640, parameters=overview)
+network_explorer(grid, depth=7, nad_parameters=overview)
 ```
 
 ## Configure GridFM-Datakit
