@@ -113,13 +113,18 @@ pd.DataFrame(
 
 The load flow leaves `tap` at its set value and reports the position it chose in `solved_tap_position`. The base case `network` is untouched, so the rest of this part runs on the original grid.
 
-PowSyBl also draws the grid. The network explorer of pypowsybl-jupyter shows the network area diagram around a voltage level, with its flows, and the single line diagram of that voltage level. Pick another voltage level, or raise the depth to see more of the grid.
+PowSyBl also draws the grid. The network explorer of pypowsybl-jupyter shows the network area diagram around a voltage level, with its flows, and the single line diagram of that voltage level. Pick another voltage level, or raise the depth to see more of the grid. The voltage levels keep the place they have in a diagram of the whole grid, passed as `fixed_nad_positions`, so the drawing grows around them instead of being laid out again at each depth.
 
 ```{python}
 #| column: page-left
+import json
+
 from pypowsybl_jupyter import network_explorer
 
-network_explorer(network)
+layout = json.loads(network.get_network_area_diagram().metadata)
+positions = pd.DataFrame(layout["nodes"]).set_index("equipmentId")[["x", "y"]]
+
+network_explorer(network, fixed_nad_positions=positions.rename_axis("id"))
 ```
 
 ## Exchange formats

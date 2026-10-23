@@ -83,14 +83,24 @@ ax = (buses.v_mag / buses.nominal_v).plot.hist(
 ax.set(title="Voltage magnitude, base case", xlabel="pu", ylabel="buses");
 ```
 
-The network explorer at depth 7 draws the whole grid, one colour per voltage level. Lower the depth to focus on one voltage level. Several PEGASE buses share a voltage level, so the per-bus legends and the flow values are left out to keep it readable.
+The network explorer at depth 7 draws the whole grid, one colour per voltage level. Lower the depth to focus on one voltage level. Several PEGASE buses share a voltage level, so the per-bus legends and the flow values are left out to keep it readable. As in part 1, the layout of the whole grid is fixed once.
 
 ```{python}
 #| column: page-left
+import json
+
 from pypowsybl_jupyter import network_explorer
 
 overview = pp.network.NadParameters(bus_legend=False, edge_info_included=False)
-network_explorer(grid, depth=7, nad_parameters=overview)
+layout = json.loads(grid.get_network_area_diagram(nad_parameters=overview).metadata)
+positions = pd.DataFrame(layout["nodes"]).set_index("equipmentId")[["x", "y"]]
+
+network_explorer(
+    grid,
+    depth=7,
+    nad_parameters=overview,
+    fixed_nad_positions=positions.rename_axis("id"),
+)
 ```
 
 ## Configure GridFM-Datakit
