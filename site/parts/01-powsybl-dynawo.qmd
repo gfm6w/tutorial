@@ -20,9 +20,16 @@ jupyter: python3
 
 ```{python}
 #| echo: false
-from helpers import PALETTE, area_diagram, setup
+from helpers import PALETTE, setup
 
 setup()
+```
+
+```{python}
+#| include: false
+import gfm6w.explorer
+
+gfm6w.explorer.install()
 ```
 
 ## Two tools from the control room
@@ -106,16 +113,13 @@ pd.DataFrame(
 
 The load flow leaves `tap` at its set value and reports the position it chose in `solved_tap_position`. The base case `network` is untouched, so the rest of this part runs on the original grid.
 
-PowSyBl also draws the grid. The network area diagram shows each voltage level with its flows.
+PowSyBl also draws the grid. The network explorer of pypowsybl-jupyter shows the network area diagram around a voltage level, with its flows, and the single line diagram of that voltage level. Pick another voltage level, or raise the depth to see more of the grid.
 
 ```{python}
-#| eval: false
-network.get_network_area_diagram()
-```
+#| column: screen-inset
+from pypowsybl_jupyter import network_explorer
 
-```{python}
-#| echo: false
-area_diagram(network)
+network_explorer(network)
 ```
 
 ## Exchange formats

@@ -2,8 +2,10 @@ project:
   type: website
   output-dir: _site
   execute-dir: project
+  pre-render: _widgets.py
   resources:
     - assets/**
+    - explorer/**
   render:
     - index.qmd
     - setup.qmd
@@ -55,6 +57,15 @@ format:
   html:
     theme: [cosmo, theme/porto.scss]
     css: theme/fonts.css
+    include-after-body:
+      text: |
+        <script type="module">
+        if (document.querySelector(".static-explorer")) {
+          const lib = document.querySelector('script[src*="site_libs/"]');
+          const root = lib.src.slice(0, lib.src.indexOf("site_libs/"));
+          import(root + "assets/js/explorer.js").then((m) => m.mount(root));
+        }
+        </script>
     title-block-banner: true
     toc: true
     toc-depth: 2

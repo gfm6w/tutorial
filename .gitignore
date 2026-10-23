@@ -9,3 +9,4 @@ site/**/*_files/
 *.deb
 *.egg-info/
 build/
+site/assets/js/pypowsybl-jupyter/

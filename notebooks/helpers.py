@@ -2,21 +2,10 @@
 
 `PALETTE` is the categorical order of the plots, assigned in order. It passes
 the colour-vision-deficiency and contrast checks on a white background.
-`area_diagram` pulls the default network area diagram layout together by
-`spread` and shows it inline with svg-pan-zoom. Each diagram carries the
-library from site/assets/js, so a notebook needs no network, and runs it with
-`define` hidden so it sets the global even under RequireJS. JupyterLab runs
-output scripts before layout and gives SVGs `height: auto`, so the map is
-sized inline, starts once it has a size and refits when its box changes. The
-script finds its map next to itself, since one output can show twice.
 """
 
-import json
 import logging
-import re
-import uuid
 import warnings
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -59,86 +48,3 @@ def setup():
     pd.set_option("display.show_dimensions", False)
     warnings.filterwarnings("ignore")
     logging.getLogger("powsybl").setLevel(logging.ERROR)
-
-
-SVG_PAN_ZOOM = (
-    Path(__file__).parent.parent / "site" / "assets" / "js" / "svg-pan-zoom.min.js"
-).read_text(encoding="utf-8")
-
-
-class Zoomable:
-    """An SVG shown inline with wheel zoom, drag pan and zoom buttons."""
-
-    def __init__(self, svg, height=560):
-        self.svg = svg
-        self.height = height
-
-    def _repr_html_(self):
-        uid = f"zoom-{uuid.uuid4().hex[:8]}"
-        svg = re.sub(r"<\?xml[^>]*>", "", self.svg, count=1)
-        svg = re.sub(
-            r"<svg[^>]*?\swidth=\"[^\"]*\"\s+height=\"[^\"]*\"",
-            lambda m: m.group(0).split(" width=")[0],
-            svg,
-            count=1,
-        )
-        svg = svg.replace(
-            "<svg",
-            f'<svg id="{uid}" width="100%" height="100%" '
-            'style="display:block;width:100%;height:100%"',
-            1,
-        )
-        box = (
-            f"height:{self.height}px;border:1px solid {GRID};"
-            "border-radius:6px;overflow:hidden"
-        )
-        note = f"font-size:0.8rem;color:{MUTED};margin-top:0.3rem"
-        return f"""
-<div style="{box}">{svg}</div>
-<p style="{note}">Scroll to zoom, drag to pan.</p>
-<script>
-(function () {{
-  if (!window.svgPanZoom) {{
-    (function (define) {{ {SVG_PAN_ZOOM} }})();
-  }}
-  var root = document.currentScript ? document.currentScript.parentNode : document;
-  var tries = 0;
-  var start = function () {{
-    var svg = root.querySelector("#{uid}");
-    var size = svg && svg.getBoundingClientRect();
-    if (!size || !size.width || !size.height) {{
-      if (tries++ < 200) setTimeout(start, 50);
-      return;
-    }}
-    var zoom = window.svgPanZoom(svg, {{controlIconsEnabled: true, fit: true,
-      center: true, minZoom: 0.5, maxZoom: 40, zoomScaleSensitivity: 0.3,
-      dblClickZoomEnabled: false}});
-    new ResizeObserver(function () {{
-      var box = svg.getBoundingClientRect();
-      if (box.width && box.height) {{ zoom.resize(); zoom.fit(); zoom.center(); }}
-    }}).observe(svg);
-  }};
-  start();
-}})();
-</script>"""
-
-
-def area_diagram(
-    network, voltage_level_ids=None, depth=0, spread=0.45, height=560, parameters=None
-):
-    """Zoomable network area diagram with its nodes pulled together."""
-    first = network.get_network_area_diagram(
-        voltage_level_ids, depth, nad_parameters=parameters
-    )
-    nodes = json.loads(first.metadata)["nodes"]
-    positions = pd.DataFrame(
-        {
-            "id": [node["equipmentId"] for node in nodes],
-            "x": [spread * node["x"] for node in nodes],
-            "y": [spread * node["y"] for node in nodes],
-        }
-    ).set_index("id")
-    diagram = network.get_network_area_diagram(
-        voltage_level_ids, depth, nad_parameters=parameters, fixed_positions=positions
-    )
-    return Zoomable(diagram.svg, height)
