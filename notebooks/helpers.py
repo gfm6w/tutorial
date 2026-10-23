@@ -5,7 +5,10 @@ the colour-vision-deficiency and contrast checks on a white background.
 `area_diagram` pulls the default network area diagram layout together by
 `spread` and shows it inline with svg-pan-zoom. Each diagram carries the
 library from site/assets/js, so a notebook needs no network, and runs it with
-`define` hidden so it sets the global even under RequireJS.
+`define` hidden so it sets the global even under RequireJS. JupyterLab runs
+output scripts before layout and gives SVGs `height: auto`, so the map is
+sized inline, starts once it has a size and refits when its box changes. The
+script finds its map next to itself, since one output can show twice.
 """
 
 import json
@@ -79,7 +82,12 @@ class Zoomable:
             svg,
             count=1,
         )
-        svg = svg.replace("<svg", f'<svg id="{uid}" width="100%" height="100%"', 1)
+        svg = svg.replace(
+            "<svg",
+            f'<svg id="{uid}" width="100%" height="100%" '
+            'style="display:block;width:100%;height:100%"',
+            1,
+        )
         box = (
             f"height:{self.height}px;border:1px solid {GRID};"
             "border-radius:6px;overflow:hidden"
@@ -93,9 +101,24 @@ class Zoomable:
   if (!window.svgPanZoom) {{
     (function (define) {{ {SVG_PAN_ZOOM} }})();
   }}
-  window.svgPanZoom("#{uid}", {{controlIconsEnabled: true, fit: true, center: true,
-                               minZoom: 0.5, maxZoom: 40, zoomScaleSensitivity: 0.3,
-                               dblClickZoomEnabled: false}});
+  var root = document.currentScript ? document.currentScript.parentNode : document;
+  var tries = 0;
+  var start = function () {{
+    var svg = root.querySelector("#{uid}");
+    var size = svg && svg.getBoundingClientRect();
+    if (!size || !size.width || !size.height) {{
+      if (tries++ < 200) setTimeout(start, 50);
+      return;
+    }}
+    var zoom = window.svgPanZoom(svg, {{controlIconsEnabled: true, fit: true,
+      center: true, minZoom: 0.5, maxZoom: 40, zoomScaleSensitivity: 0.3,
+      dblClickZoomEnabled: false}});
+    new ResizeObserver(function () {{
+      var box = svg.getBoundingClientRect();
+      if (box.width && box.height) {{ zoom.resize(); zoom.fit(); zoom.center(); }}
+    }}).observe(svg);
+  }};
+  start();
 }})();
 </script>"""
 
