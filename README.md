@@ -51,4 +51,5 @@ Code (`gfm6w/`, `notebooks/helpers.py`, `scripts/`) is under [Apache-2.0](LICENS
 
 - IEEE 14-bus case and Dynawo inputs from the GridFM-Datakit dynamic example (Apache-2.0), `IDAOrder2` solver set from the Dynawo IEEE14 fault example.
 - PEGASE case from [PGLib-OPF](https://github.com/power-grid-lib/pglib-opf) (CC BY 4.0), by C. Josz, S. Fliscounakis, J. Maeght and P. Panciatici.
-- Fonts Space Grotesk, IBM Plex Sans and JetBrains Mono ([SIL OFL](site/assets/fonts/OFL.txt)). [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) ([BSD-2-Clause](site/assets/js/svg-pan-zoom.LICENSE)).
+- Fonts Space Grotesk, IBM Plex Sans and JetBrains Mono ([SIL OFL](site/assets/fonts/OFL.txt)).
+- Network explorer from [pypowsybl-jupyter](https://github.com/powsybl/pypowsybl-jupyter) (MPL-2.0), whose widget scripts ship with the website.
