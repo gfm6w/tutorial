@@ -1,8 +1,8 @@
 """The gfm6w command, which builds the tutorial from its Quarto pages.
 
     gfm6w notebooks        regenerate the notebooks and solutions, nothing runs
-    gfm6w check            fail if the notebooks, solutions or frozen outputs
-                           are out of date
+    gfm6w check            fail if the notebooks, solutions, frozen outputs or
+                           explorer data are out of date
     gfm6w test [N ...]     run notebooks N (1 to 4, default all), solutions
                            filled in
     gfm6w format           format the code of the pages with ruff
@@ -13,18 +13,21 @@
 
 Every command reads the pages from -i (default site/). The notebooks go to -o
 (default notebooks/). Quarto renders the website into site/_site, html copies
-it to -o if given. build takes --notebooks and --html instead. test runs the
-notebooks from -o, which sits next to data/ for their relative paths to
-resolve. The interpreter gfm6w is installed in runs the pages and the
-notebooks. Quarto reuses site/_freeze for pages whose source did not change,
-`quarto render site/NAME.qmd` reruns one. Defaults resolve from the package,
-so gfm6w is installed editable from the clone.
+it to -o if given. html also drops explorer data no page uses and copies the
+rest into the website, since Quarto copies resources before the pages run.
+build takes --notebooks and --html instead. test runs the notebooks from -o,
+which sits next to data/ for their relative paths to resolve. The interpreter
+gfm6w is installed in runs the pages and the notebooks. Quarto reuses
+site/_freeze for pages whose source did not change, `quarto render
+site/NAME.qmd` reruns one. Defaults resolve from the package, so gfm6w is
+installed editable from the clone.
 """
 
 import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -62,6 +65,19 @@ def frozen(site, source):
     return json.loads(path.read_text(encoding="utf-8"))["hash"] == digest
 
 
+def explorers(site):
+    used = set()
+    for path in (site / "_freeze").rglob("html.json"):
+        markdown = json.loads(path.read_text(encoding="utf-8"))["result"]["markdown"]
+        used.update(re.findall(r'data-explorer="(explorer/[0-9a-f]+)"', markdown))
+    present = {
+        path.relative_to(site).as_posix()
+        for path in (site / "explorer").glob("*")
+        if path.is_dir()
+    }
+    return used - present, present - used
+
+
 def check(site, out):
     stale = [
         out / name
@@ -70,17 +86,22 @@ def check(site, out):
         if not (out / name).exists() or (out / name).read_text(encoding="utf-8") != text
     ]
     unrendered = [source for source in pages(site) if not frozen(site, source)]
+    missing, unused = explorers(site)
     for path in stale:
         print(f"{path} is out of date")
     for source in unrendered:
         print(f"{source} changed since its frozen outputs")
+    for folder in sorted(missing):
+        print(f"site/{folder} is missing")
+    for folder in sorted(unused):
+        print(f"site/{folder} is no longer used")
     if stale:
         print("Run `gfm6w notebooks` and commit the result.")
-    if unrendered:
-        print("Run `quarto render` on each page and commit site/_freeze.")
-    if stale or unrendered:
+    if unrendered or missing or unused:
+        print("Run `gfm6w html` and commit site/_freeze and site/explorer.")
+    if stale or unrendered or missing or unused:
         sys.exit(1)
-    print("Notebooks and frozen outputs match the sources")
+    print("Notebooks, frozen outputs and explorers match the sources")
 
 
 def test(site, out, parts):
@@ -107,6 +128,11 @@ def test(site, out, parts):
 def html(site, out):
     env = dict(os.environ, QUARTO_PYTHON=sys.executable)
     subprocess.run(["quarto", "render"], cwd=site, env=env, check=True)
+    for folder in explorers(site)[1]:
+        shutil.rmtree(site / folder)
+    shutil.rmtree(site / "_site" / "explorer", ignore_errors=True)
+    if (site / "explorer").exists():
+        shutil.copytree(site / "explorer", site / "_site" / "explorer")
     if out != site / "_site":
         shutil.copytree(site / "_site", out, dirs_exist_ok=True)
         print(f"Website copied to {out}")
