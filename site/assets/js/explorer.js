@@ -10,9 +10,9 @@ const scripts = {};
 const sheets = new Set();
 
 const STYLE = `
-.pje { display: flex; gap: 4px; font: 13px system-ui, sans-serif; color: #1b2a3a;
-  overflow-x: auto; margin: 0.5rem 0 1rem; }
-.pje-left { display: flex; flex-direction: column; width: 350px; height: 700px;
+.pje { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 13px system-ui, sans-serif;
+  color: #1b2a3a; margin: 0.5rem 0 1rem; }
+.pje-left { display: flex; flex-direction: column; width: 300px; height: 700px;
   flex: none; gap: 4px; padding-top: 26px; }
 .pje-title { position: absolute; margin-top: -26px; font-weight: 600; }
 .pje-row { display: flex; align-items: flex-start; gap: 6px; }
@@ -22,7 +22,7 @@ const STYLE = `
 .pje-row input { padding: 3px 6px; }
 .pje-found { flex: 80; } .pje-history { flex: 18; }
 .pje-found select, .pje-history select { height: 100%; }
-.pje-right { width: 850px; height: 700px; flex: none; display: flex;
+.pje-right { flex: 1 1 520px; min-width: 0; height: 700px; display: flex;
   flex-direction: column; padding-top: 26px; }
 .pje-tabs { display: flex; border-bottom: 1px solid #c4d0dc; }
 .pje-tabs button { font: inherit; background: #f6f8fa; border: 1px solid #c4d0dc;
@@ -32,7 +32,13 @@ const STYLE = `
   margin-bottom: -1px; }
 .pje-panel { display: none; flex: 1; border: 1px solid #c4d0dc; border-top: none;
   padding: 6px; overflow: auto; }
-.pje-panel.on { display: block; }
+.pje-panel.on { display: flex; flex-direction: column; }
+.pje-panel > div:last-child { flex: 1; min-height: 0; }
+.pje-panel :is(.svg-nad-viewer-widget, .svg-sld-viewer-widget, .network-map-viewer-widget) {
+  display: block; height: 100%; box-sizing: border-box; }
+.pje-panel :is(.svg-nad-viewer-widget, .network-map-viewer-widget) > div,
+.pje-panel :is(.svg-nad-viewer-widget, .svg-sld-viewer-widget) :is(div:has(> svg), div > svg) {
+  width: 100% !important; height: 100% !important; display: block; }
 .pje-depth { display: flex; align-items: center; gap: 8px; height: 28px; }
 .pje-depth input { width: 160px; }
 .pje-note { color: #5a6b7e; font-size: 12px; margin-left: auto; }
