@@ -13,7 +13,7 @@ Steady-state and dynamic power system datasets for grid foundation models, with 
 
 Set up before the session, details on the [setup page](https://gfm6w.github.io/setup.html).
 
-- [Open in GitHub Codespaces](https://codespaces.new/gfm6w/tutorial?quickstart=1), nothing to install.
+- [Open in GitHub Codespaces](https://codespaces.new/gfm6w/tutorial?quickstart=1), nothing to install. Prefer Google Chrome.
 - `docker run --rm -p 8888:8888 ghcr.io/gfm6w/tutorial`
 - Locally on Linux or WSL 2.
 
