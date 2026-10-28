@@ -27,7 +27,11 @@ Open the repository in a codespace. It starts from a ready-made image with Pytho
 
 [Open in GitHub Codespaces](https://codespaces.new/gfm6w/tutorial?quickstart=1){.btn .btn-primary}
 
-Pulling the image takes a few minutes. Start it before the session. Prefer Google Chrome.
+Pulling the image takes a few minutes. Start it before the session.
+
+::: {.callout-tip title="Use Google Chrome"}
+Codespaces runs best in Chrome. Other browsers may not display everything.
+:::
 
 ## Container {#container}
 
