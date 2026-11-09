@@ -10,6 +10,9 @@
     gfm6w build            html, then notebooks
     gfm6w publish -o DIR   build, then mirror the website into DIR, a checkout
                            of gfm6w.github.io, keeping its .git, .github and CNAME
+    gfm6w export -o DIR    replace DIR, a folder of a gridfm-tutorials checkout,
+                           with the notebooks, data, setup scripts, lock and
+                           licences, and a README naming the source commit
 
 Every command reads the pages from -i (default site/). The notebooks go to -o
 (default notebooks/). Quarto renders the website into site/_site, html copies
@@ -44,6 +47,9 @@ SITE = ROOT / "site"
 NOTEBOOKS = ROOT / "notebooks"
 HTML = SITE / "_site"
 KEEP = {".git", ".github", "CNAME"}
+EXPORT = ["data", "scripts", "requirements.txt", "LICENSE", "LICENSE-CC-BY-4.0"]
+EXPORT_README = Path(__file__).resolve().parent / "export.md"
+EXPORT_IGNORE = ".venv/\n__pycache__/\n.ipynb_checkpoints/\nnotebooks/outputs/\n"
 
 
 def pages(site, parts=()):
@@ -166,6 +172,35 @@ def publish(site, out):
     print(f"Site copied to {out}")
 
 
+def git(root, *args):
+    return subprocess.run(
+        ["git", *args], cwd=root, capture_output=True, text=True, check=True
+    ).stdout.strip()
+
+
+def export(site, out):
+    root = site.parent
+    if (out / ".git").exists():
+        sys.exit(f"{out} is a repository, pass a folder inside it")
+    if git(root, "status", "--porcelain", "--untracked-files=no"):
+        sys.exit(f"{root} has uncommitted changes, the README names the commit")
+    commit = git(root, "rev-parse", "HEAD")
+    shutil.rmtree(out, ignore_errors=True)
+    notebooks(site, out / "notebooks")
+    shutil.copy2(root / "notebooks" / "helpers.py", out / "notebooks")
+    for name in EXPORT:
+        if (root / name).is_dir():
+            ignore = shutil.ignore_patterns("__pycache__")
+            shutil.copytree(root / name, out / name, ignore=ignore)
+        else:
+            shutil.copy2(root / name, out / name)
+    readme = EXPORT_README.read_text(encoding="utf-8")
+    readme = readme.replace("{commit}", commit).replace("{short}", commit[:7])
+    (out / "README.md").write_text(readme, encoding="utf-8", newline="\n")
+    (out / ".gitignore").write_text(EXPORT_IGNORE, encoding="utf-8", newline="\n")
+    print(f"Tutorial at {commit[:7]} exported to {out}")
+
+
 def folder(text):
     return Path(text).resolve()
 
@@ -224,6 +259,13 @@ def main():
         required=True,
         help="checkout of gfm6w.github.io",
     )
+    commands.add_parser("export", parents=[inputs]).add_argument(
+        "-o",
+        "--output",
+        type=folder,
+        required=True,
+        help="folder of a gridfm-tutorials checkout",
+    )
     args = parser.parse_args()
     if not (args.input / "_quarto.yml").exists():
         sys.exit(f"{args.input} has no _quarto.yml, pass the pages with -i")
@@ -239,8 +281,10 @@ def main():
         html(args.input, args.output)
     elif args.command == "build":
         build(args.input, args.html, args.notebooks)
-    else:
+    elif args.command == "publish":
         publish(args.input, args.output)
+    else:
+        export(args.input, args.output)
 
 
 if __name__ == "__main__":
