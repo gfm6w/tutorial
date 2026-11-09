@@ -87,7 +87,7 @@ fqdn==1.6.0
     # via jsonschema
 google-crc32c==1.9.0 ; python_full_version >= '3.11'
     # via zarr
-gridfm-datakit @ git+https://github.com/yemine0x01/gridfm-datakit@d9e4ebde2462f7dfcd2db1e459025ebd0e19280c
+gridfm-datakit @ git+https://github.com/gridfm/gridfm-datakit@1b974c07eab6f4ff6d2083b6f2b5d89232f32867
     # via -r requirements.in
 h11==0.16.0
     # via httpcore
