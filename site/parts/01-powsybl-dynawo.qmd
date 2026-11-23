@@ -170,8 +170,7 @@ pd.DataFrame(
 )
 ```
 
-Some loading limits are lost during the PSS/E round-trip. A MATPOWER case rates its branches in apparent power. When exporting to PSS/E, the limits for different durations are written in increasing order, starting with RATE 1. But only the permanent limits are re-imported from PSS/E and converted to current limits.
-PowSyBl assigns a limit to each side of a branch, with an explicit acceptable duration. This differs from MATPOWER or PSS/E.
+Some loading limits are lost during the PSS/E round trip. A MATPOWER case rates its branches in apparent power, with a permanent limit and two temporary ones. The PSS/E export writes them as RATE1, RATE2 and RATE3, but only RATE1 comes back on import, as a permanent current limit. PowSyBl assigns a limit to each side of a branch, with an explicit acceptable duration. This differs from MATPOWER or PSS/E.
 
 ## A first Dynawo simulation
 
