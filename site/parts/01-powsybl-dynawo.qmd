@@ -128,8 +128,7 @@ network_explorer(network, fixed_nad_positions=positions.rename_axis("id"))
 ```
 
 ## Exchange formats
-
-European operators exchange grid models as **CGMES**, the Common Grid Model Exchange Standard. PowSyBl writes and reads it, as well as its own **XIIDM** format. A round trip shows what each one keeps. It runs on the PEGASE 89-bus case of PGLib, the grid of Part 2, which GridFM-Datakit's PowSyBl reader turns from a MATPOWER file into a pypowsybl network.
+PowSyBl reads and writes different formats, including **CGMES**, **MATPOWER**, **PSS/E** and **IIDM**. A round trip shows what each one keeps. It runs on the PEGASE 89-bus case of PGLib, the grid of Part 2, which GridFM-Datakit's PowSyBl reader turns from a MATPOWER file into a pypowsybl network.
 
 ```{python}
 from pathlib import Path
@@ -139,7 +138,7 @@ from gridfm_datakit.powsybl import load_net
 
 Path("outputs/part1").mkdir(parents=True, exist_ok=True)
 grid = load_net(get_pglib_source_path("case89_pegase")).pp_net
-grid.save("outputs/part1/pegase89.zip", format="CGMES")
+grid.save("outputs/part1/pegase89.raw", format="PSS/E")
 grid.save(
     "outputs/part1/pegase89_cgmes3.zip",
     format="CGMES",
@@ -149,8 +148,9 @@ grid.save("outputs/part1/pegase89.xiidm", format="XIIDM")
 
 copies = {
     "MATPOWER source": grid,
-    "CGMES 2.4.15": pp.network.load("outputs/part1/pegase89.zip"),
-    "CGMES 3": pp.network.load("outputs/part1/pegase89_cgmes3.zip"),
+    "PSS/E": pp.network.load("outputs/part1/pegase89.raw"),
+    "CGMES 3": pp.network.load("outputs/part1/pegase89_cgmes3.zip", 
+                               parameters={"iidm.import.cgmes.import-node-breaker-as-bus-breaker": "true"}),
     "XIIDM": pp.network.load("outputs/part1/pegase89.xiidm"),
 }
 pd.DataFrame(
@@ -167,7 +167,8 @@ pd.DataFrame(
 )
 ```
 
-A MATPOWER case rates its branches in apparent power. CGMES 2.4.15 holds apparent power limits in its Equipment Operation profile, which PowSyBl does not write for a bus-branch model like this one, so they are lost. CGMES 3 moved them into the core equipment profile and keeps them, but two buses go missing on the way back. XIIDM keeps everything, so that is the file GridFM-Datakit gets in Part 2. A CGMES file from an operator, whose limits are currents, goes in the same way.
+Some loading limits are lost during the PSS/E round-trip. A MATPOWER case rates its branches in apparent power. When exporting to PSS/E, the limits for different durations are written in increasing order, starting with RATE 1. But only the permanent limits are re-imported from PSS/E and converted to current limits.
+PowSyBl assigns a limit to each side of a branch, with an explicit acceptable duration. This differs from MATPOWER or PSS/E.
 
 ## A first Dynawo simulation
 
