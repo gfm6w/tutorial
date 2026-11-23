@@ -128,6 +128,7 @@ network_explorer(network, fixed_nad_positions=positions.rename_axis("id"))
 ```
 
 ## Exchange formats
+
 PowSyBl reads and writes different formats, including **CGMES**, **MATPOWER**, **PSS/E** and **IIDM**. A round trip shows what each one keeps. It runs on the PEGASE 89-bus case of PGLib, the grid of Part 2, which GridFM-Datakit's PowSyBl reader turns from a MATPOWER file into a pypowsybl network.
 
 ```{python}
@@ -149,8 +150,10 @@ grid.save("outputs/part1/pegase89.xiidm", format="XIIDM")
 copies = {
     "MATPOWER source": grid,
     "PSS/E": pp.network.load("outputs/part1/pegase89.raw"),
-    "CGMES 3": pp.network.load("outputs/part1/pegase89_cgmes3.zip", 
-                               parameters={"iidm.import.cgmes.import-node-breaker-as-bus-breaker": "true"}),
+    "CGMES 3": pp.network.load(
+        "outputs/part1/pegase89_cgmes3.zip",
+        parameters={"iidm.import.cgmes.import-node-breaker-as-bus-breaker": "true"},
+    ),
     "XIIDM": pp.network.load("outputs/part1/pegase89.xiidm"),
 }
 pd.DataFrame(
