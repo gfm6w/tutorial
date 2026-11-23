@@ -76,6 +76,7 @@ import json
 
 from pypowsybl_jupyter import network_explorer
 
+pp.loadflow.run_ac(grid, pp.loadflow.Parameters(distributed_slack=False))
 overview = pp.network.NadParameters(bus_legend=False, edge_info_included=False)
 layout = json.loads(grid.get_network_area_diagram(nad_parameters=overview).metadata)
 positions = pd.DataFrame(layout["nodes"]).set_index("equipmentId")[["x", "y"]]
