@@ -44,6 +44,7 @@ website:
         text: "4 · Dynamic events"
     right:
       - text: Editions
+        icon: layers
         menu:
           - href: https://gfm6w.github.io/
             text: "GridFM 2026, Porto"
@@ -66,9 +67,17 @@ format:
     include-after-body:
       text: |
         <script type="module">
+        const lib = document.querySelector('script[src*="site_libs/"]');
+        const root = lib.src.slice(0, lib.src.indexOf("site_libs/"));
+        const here = new URL(root).pathname;
+        const editions = '[aria-labelledby="nav-menu-editions"] .dropdown-item';
+        for (const item of document.querySelectorAll(editions)) {
+          if (new URL(item.href).pathname === here) {
+            item.classList.add("active");
+            item.setAttribute("aria-current", "page");
+          }
+        }
         if (document.querySelector(".static-explorer")) {
-          const lib = document.querySelector('script[src*="site_libs/"]');
-          const root = lib.src.slice(0, lib.src.indexOf("site_libs/"));
           import(root + "assets/js/explorer.js").then((m) => m.mount(root));
         }
         </script>
