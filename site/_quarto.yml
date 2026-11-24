@@ -21,7 +21,7 @@ execute:
 
 website:
   title: "PowSyBl & Dynawo in Practice"
-  description: "Generating steady-state and dynamic power system datasets for grid foundation models. GridFM tutorial, Porto, October 2026."
+  description: "Generating steady-state and dynamic power system datasets for grid foundation models. Tutorial for the IREQ visit, adapted from GridFM 2026, Porto."
   site-url: https://gfm6w.github.io/ireq
   repo-url: https://github.com/gfm6w/tutorial
   favicon: assets/logos/gridfm-icon.png
@@ -50,7 +50,7 @@ website:
         href: https://github.com/gfm6w/tutorial
         aria-label: Tutorial repository
   page-footer:
-    left: "GridFM 2026 · Porto · Faculty of Engineering, University of Porto"
+    left: "IREQ visit · Adapted from the [GridFM 2026](https://gridfm.org/porto/) tutorial, Porto"
     right: "Built with [PowSyBl](https://www.powsybl.org), [Dynawo](https://dynawo.github.io) and [GridFM-Datakit](https://github.com/gridfm/gridfm-datakit)"
 
 format:

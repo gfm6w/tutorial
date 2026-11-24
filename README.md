@@ -1,6 +1,6 @@
 # PowSyBl & Dynawo in Practice
 
-Steady-state and dynamic power system datasets for grid foundation models, with [PowSyBl](https://www.powsybl.org), [Dynawo](https://dynawo.github.io) and [GridFM-Datakit](https://github.com/gridfm/gridfm-datakit). Tutorial at [GridFM 2026](https://gridfm.org/porto/), Porto, 29 October 2026. Rendered pages at <https://gfm6w.github.io/ireq/>.
+Steady-state and dynamic power system datasets for grid foundation models, with [PowSyBl](https://www.powsybl.org), [Dynawo](https://dynawo.github.io) and [GridFM-Datakit](https://github.com/gridfm/gridfm-datakit). Tutorial for the IREQ visit, adapted from the one given at [GridFM 2026](https://gridfm.org/porto/), Porto, 29 October 2026. Rendered pages at <https://gfm6w.github.io/ireq/>.
 
 | Part | Notebook | Time |
 |---|---|---|

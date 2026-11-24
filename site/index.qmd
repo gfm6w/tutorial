@@ -1,6 +1,6 @@
 ---
 title: "PowSyBl & Dynawo in Practice"
-subtitle: "GridFM 2026 · Porto · Tutorial"
+subtitle: "IREQ visit · Tutorial"
 description: "Generating steady-state and dynamic power system datasets for grid foundation models."
 toc: false
 page-layout: article
@@ -11,7 +11,7 @@ A hands-on tutorial on **PowSyBl** and **Dynawo**, two open-source, industrial-g
 :::
 
 ::: {.btn-row}
-[Set up your machine](setup.qmd){.primary} [Notebooks on GitHub](https://github.com/gfm6w/tutorial) [Conference page](https://gridfm.org/porto/)
+[Set up your machine](setup.qmd){.primary} [Notebooks on GitHub](https://github.com/gfm6w/tutorial)
 :::
 
 ## Programme
