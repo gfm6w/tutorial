@@ -11,7 +11,7 @@ A hands-on tutorial on **PowSyBl** and **Dynawo**, two open-source, industrial-g
 :::
 
 ::: {.btn-row}
-[Set up your machine](setup.qmd){.primary} [Notebooks on GitHub](https://github.com/gfm6w/tutorial)
+[Set up your machine](setup.qmd){.primary} [Notebooks on GitHub](https://github.com/gfm6w/tutorial/tree/tuto_visite_IREQ)
 :::
 
 ## Programme
@@ -47,7 +47,7 @@ A hands-on tutorial on **PowSyBl** and **Dynawo**, two open-source, industrial-g
 
 ## How the tutorial works
 
-Each part is a Jupyter notebook. Run it cell by cell and fill in the exercises, or read along here without installing anything, since every page was executed end to end and shows all its outputs. The notebooks live in [`notebooks/`](https://github.com/gfm6w/tutorial/tree/main/notebooks) of the tutorial repository and are built from the same sources as these pages. The [setup page](setup.qmd) gives three ways to run them, including a ready-made container.
+Each part is a Jupyter notebook. Run it cell by cell and fill in the exercises, or read along here without installing anything, since every page was executed end to end and shows all its outputs. The notebooks live in [`notebooks/`](https://github.com/gfm6w/tutorial/tree/tuto_visite_IREQ/notebooks) of the tutorial repository and are built from the same sources as these pages. The [setup page](setup.qmd) gives three ways to run them, including a ready-made container.
 
 ## Companion talk
 
