@@ -2,7 +2,7 @@ name: Image
 
 on:
   push:
-    branches: [main]
+    branches: [tuto_visite_IREQ]
     paths:
       - ".devcontainer/**"
       - ".dockerignore"
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: image
+  group: image-ireq
   cancel-in-progress: true
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
           file: .devcontainer/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:ireq
             ghcr.io/${{ github.repository }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
