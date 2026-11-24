@@ -74,6 +74,15 @@ $toc-active-border: $gfm-blue;
       align-self: center;
     }
   }
+  @media (min-width: 992px) and (max-width: 1499.98px) {
+    &.navbar-expand-lg .navbar-nav .nav-link {
+      padding-left: 0.3rem;
+      padding-right: 0.3rem;
+    }
+    #nav-menu-editions .menu-text {
+      @include visually-hidden;
+    }
+  }
   #nav-menu-editions {
     display: inline-block;
     margin-right: 0.4rem;

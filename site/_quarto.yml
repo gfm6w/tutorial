@@ -44,6 +44,7 @@ website:
         text: "4 · Dynamic events"
     right:
       - text: Editions
+        icon: layers
         menu:
           - href: https://gfm6w.github.io/
             text: "GridFM 2026, Porto"
