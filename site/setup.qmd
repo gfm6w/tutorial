@@ -38,7 +38,7 @@ Codespaces runs best in Chrome. Other browsers may not display everything.
 The image holds the notebooks and every tool they need. Pull and run it, then open the link printed by Jupyter.
 
 ```bash
-docker run --rm -p 8888:8888 ghcr.io/gfm6w/tutorial
+docker run --rm -p 8888:8888 ghcr.io/gfm6w/tutorial:ireq
 ```
 
 The download is about 2 GB, 5 GB on disk. Work done in the container is lost when it stops, unless you run it on a clone of the repository.
@@ -46,10 +46,10 @@ The download is about 2 GB, 5 GB on disk. Work done in the container is lost whe
 ```bash
 git clone -b tuto_visite_IREQ https://github.com/gfm6w/tutorial.git
 cd tutorial
-docker run --rm -p 8888:8888 -v "$PWD":/workspace ghcr.io/gfm6w/tutorial
+docker run --rm -p 8888:8888 -v "$PWD":/workspace ghcr.io/gfm6w/tutorial:ireq
 ```
 
-With VS Code, open the clone and choose **Reopen in Container**. To build the image yourself, run `docker build -t ghcr.io/gfm6w/tutorial -f .devcontainer/Dockerfile .` from the clone.
+With VS Code, open the clone and choose **Reopen in Container**. To build the image yourself, run `docker build -t ghcr.io/gfm6w/tutorial:ireq -f .devcontainer/Dockerfile .` from the clone.
 
 ## Local install {#local}
 

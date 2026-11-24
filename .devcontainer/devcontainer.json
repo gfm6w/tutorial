@@ -1,6 +1,6 @@
 {
   "name": "GridFM Porto tutorial",
-  "image": "ghcr.io/gfm6w/tutorial:latest",
+  "image": "ghcr.io/gfm6w/tutorial:ireq",
   "hostRequirements": {
     "cpus": 4,
     "memory": "8gb"
