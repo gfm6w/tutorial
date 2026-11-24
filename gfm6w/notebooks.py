@@ -29,7 +29,7 @@ import nbformat
 import yaml
 from PIL import Image
 
-SITE_URL = "https://gfm6w.github.io"
+SITE_URL = "https://gfm6w.github.io/ireq"
 SOURCES = [
     "parts/01-powsybl-dynawo.qmd",
     "parts/02-steady-state.qmd",

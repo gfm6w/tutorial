@@ -22,7 +22,7 @@ execute:
 website:
   title: "PowSyBl & Dynawo in Practice"
   description: "Generating steady-state and dynamic power system datasets for grid foundation models. GridFM tutorial, Porto, October 2026."
-  site-url: https://gfm6w.github.io
+  site-url: https://gfm6w.github.io/ireq
   repo-url: https://github.com/gfm6w/tutorial
   favicon: assets/logos/gridfm-icon.png
   page-navigation: true
@@ -77,3 +77,4 @@ format:
     fig-format: retina
     smooth-scroll: true
     link-external-newwindow: true
+    link-external-filter: '^https:\/\/gfm6w\.github\.io\/'
