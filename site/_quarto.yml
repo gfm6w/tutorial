@@ -43,6 +43,12 @@ website:
       - href: parts/04-dynamic-events.qmd
         text: "4 · Dynamic events"
     right:
+      - text: Editions
+        menu:
+          - href: https://gfm6w.github.io/
+            text: "GridFM 2026, Porto"
+          - href: https://gfm6w.github.io/ireq/
+            text: "IREQ visit"
       - href: https://www.artelys.com
         text: Artelys
         aria-label: Artelys website
